@@ -1,1 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduVerse · Admin Panel Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           RESET & VARIABLES
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --primary-light: #a78bfa;
+            --primary-glow: rgba(139, 92, 246, 0.25);
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-dim: #64748b;
+            --border: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px 24px 40px;
+            background-image: radial-gradient(ellipse at 10% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .admin-container { max-width: 1200px; margin: 0 auto; }
+
+        /* ─── HEADER ─── */
+        .admin-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .admin-header .brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-header .brand i { color: var(--primary); }
+        .admin-header .brand span { color: var(--primary); }
+
+        .admin-header .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .admin-header .header-actions .badge {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-header .header-actions .badge i { color: var(--primary); }
+
+        /* ─── TABS ─── */
+        .admin-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 24px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+        .admin-tabs .tab {
+            padding: 10px 18px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.75rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-tabs .tab:hover { color: var(--text); }
+
+        .admin-tabs .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .admin-tabs .tab i { font-size: 0.8rem; }
+
+        .tab-content {
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+
+        .tab-content.active { display: block; }
+
+        /* ─── CONTENT SUB-TABS (Chapters / Lectures / PDFs) ─── */
+        .content-subtabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .content-subtabs .csub {
+            padding: 14px 18px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content-subtabs .csub:hover { color: var(--text); border-color: var(--success); }
+
+        .content-subtabs .csub.active {
+            background: var(--success);
+            border-color: var(--success);
+            color: #04120c;
+            box-shadow: 0 4px 20px rgba(52, 211, 153, 0.25);
+        }
+
+        .content-subtab-content { display: none; animation: slideUp 0.4s ease; }
+        .content-subtab-content.active { display: block; }
+
+        .icon-type-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .icon-type-btn {
+            padding: 9px 10px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+        }
+        .icon-type-btn.active {
+            background: var(--success);
+            border-color: var(--success);
+            color: #04120c;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── PANEL STYLES ─── */
+        .panel-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            margin-bottom: 20px;
+        }
+
+        .panel-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-card h3 i { color: var(--primary); }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .btn-danger {
+            background: rgba(248, 113, 113, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            color: var(--danger);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-danger:hover { background: rgba(248, 113, 113, 0.3); }
+
+        .btn-success {
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            color: var(--success);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-success:hover { background: rgba(52, 211, 153, 0.3); }
+
+        .btn-warning {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            color: var(--warning);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-warning:hover { background: rgba(251, 191, 36, 0.3); }
+
+        .logo-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .logo-preview img {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .logo-preview span {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* ─── GRID LISTS ─── */
+        .grid-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .list-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .list-item:hover { border-color: var(--primary); }
+
+        .list-item .item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .list-item .item-top .icon-big { font-size: 2rem; }
+
+        .list-item .item-top .badge-status {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 40px;
+        }
+
+        .list-item .item-top .badge-status.active {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--success);
+        }
+
+        .list-item .item-top .badge-status.inactive {
+            background: rgba(248, 113, 113, 0.15);
+            color: var(--danger);
+        }
+
+        .list-item h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .list-item .sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .list-item .item-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .list-item .item-actions button {
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ─── BATCH ITEM ─── */
+        .batch-item-list {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .batch-item-list .info .name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .batch-item-list .info .meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .batch-item-list .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .batch-item-list .actions button {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .batch-item-list .actions .btn-delete-notif {
+            background: rgba(248, 113, 113, 0.15);
+            color: var(--danger);
+        }
+
+        .batch-item-list .actions .btn-delete-notif:hover {
+            background: rgba(248, 113, 113, 0.3);
+        }
+
+        .batch-item-list .actions .btn-edit-item {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--warning);
+        }
+
+        .batch-item-list .actions .btn-edit-item:hover {
+            background: rgba(251, 191, 36, 0.3);
+        }
+
+        /* ─── STATS CARDS ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ─── DRAG HANDLE ─── */
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .drag-handle:active { cursor: grabbing; }
+
+        /* ─── TOAST ─── */
+        .toast-modern {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            padding: 16px 32px;
+            border-radius: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s ease;
+            z-index: 999;
+            font-size: 0.9rem;
+        }
+
+        .toast-modern.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast-modern i { margin-right: 8px; color: var(--primary); }
+
+        /* ─── EDIT MODAL ─── */
+        .edit-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .edit-modal.open { display: flex; }
+        .edit-modal .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 28px 30px;
+            max-width: 480px;
+            width: 100%;
+            animation: slideUp 0.3s ease;
+        }
+        .edit-modal .modal-content h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .edit-modal .modal-content .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .edit-modal .modal-content .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            border: none;
+        }
+        .edit-modal .modal-content .modal-actions .btn-save {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+        }
+        .edit-modal .modal-content .modal-actions .btn-save:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+        .edit-modal .modal-content .modal-actions .btn-cancel-edit {
+            background: var(--glass-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+        }
+        .edit-modal .modal-content .modal-actions .btn-cancel-edit:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .grid-list { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .admin-tabs .tab { font-size: 0.65rem; padding: 8px 12px; }
+            .admin-tabs .tab i { display: none; }
+            .panel-card { padding: 16px 14px; }
+            .content-subtabs { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .admin-header .brand { font-size: 1.1rem; }
+            .admin-header .header-actions .badge { font-size: 0.6rem; padding: 4px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+
+        <!-- ─── HEADER ─── -->
+        <header class="admin-header">
+            <div class="brand">
+                <i class="fas fa-shield-alt"></i> Edu<span>Verse</span> Admin
+            </div>
+            <div class="header-actions">
+                <span class="badge"><i class="fas fa-database"></i> v2.0</span>
+            </div>
+        </header>
+
+        <!-- ─── TABS ─── -->
+        <div class="admin-tabs">
+            <button class="tab active" data-tab="institutes"><i class="fas fa-building"></i> Institutes</button>
+            <button class="tab" data-tab="batches"><i class="fas fa-cubes"></i> Batches</button>
+            <button class="tab" data-tab="content"><i class="fas fa-book"></i> Course Content</button>
+            <button class="tab" data-tab="students"><i class="fas fa-user-graduate"></i> Students</button>
+            <button class="tab" data-tab="notifications"><i class="fas fa-bell"></i> Notifications</button>
+            <button class="tab" data-tab="settings"><i class="fas fa-cog"></i> Settings</button>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+        TAB 1: INSTITUTES
+        ════════════════════════════════════════════════════════════ -->
+        <div class="tab-content active" id="tab-institutes">
+            <div class="panel-card">
+                <h3><i class="fas fa-plus-circle"></i> <span id="formTitle">Add New Institute</span></h3>
+                <form id="instituteForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Institute Name *</label>
+                            <input type="text" id="instName" placeholder="e.g. Next Toppers" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Tag / Category</label>
+                            <input type="text" id="instTag" placeholder="e.g. CBSE 9-12" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subtitle</label>
+                            <input type="text" id="instSubtitle" placeholder="e.g. UPSC · STATE PCS · SSC" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="instDesc" placeholder="Brief description of the institute..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Logo (Image)</label>
+                        <input type="file" id="instLogo" accept="image/*" />
+                        <div class="logo-preview" id="logoPreview">
+                            <span>No logo uploaded</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Institute Status</label>
+                        <select id="instStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> <span id="submitBtnText">Add Institute</span></button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <h3><i class="fas fa-list"></i> All Institutes <span style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;" id="instCount">(0)</span></h3>
+                <div class="grid-list" id="instituteGrid"></div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+        TAB 2: BATCHES
+        ════════════════════════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-batches">
+            <div class="panel-card">
+                <h3><i class="fas fa-plus-circle"></i> Add New Batch</h3>
+                <form id="batchForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Institute *</label>
+                            <select id="batchInstitute" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Batch Name *</label>
+                            <input type="text" id="batchName" placeholder="e.g. Class 12th" required />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Meta / Tagline</label>
+                            <input type="text" id="batchMeta" placeholder="e.g. CBSE · Science & Commerce" />
+                        </div>
+                        <div class="form-group">
+                            <label>Batch Type</label>
+                            <select id="batchType">
+                                <option value="free">Free</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row" id="priceFields">
+                        <div class="form-group">
+                            <label>Original Price (₹)</label>
+                            <input type="number" id="batchOriginalPrice" placeholder="1499" />
+                        </div>
+                        <div class="form-group">
+                            <label>Discounted Price (₹)</label>
+                            <input type="number" id="batchDiscountedPrice" placeholder="999" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Batch Image URL</label>
+                        <input type="text" id="batchImage" placeholder="https://example.com/batch-image.jpg" />
+                    </div>
+                    <div class="form-group">
+                        <label>Batch Overview (HTML supported)</label>
+                        <textarea id="batchOverview" rows="4" placeholder="<h3>Course Title</h3><p>Description...</p>"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Batch Status</label>
+                        <select id="batchStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Add Batch</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <h3><i class="fas fa-cubes"></i> All Batches <span style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;" id="batchCount">(0)</span></h3>
+                <div id="allBatchesList"></div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+        TAB 3: COURSE CONTENT
+        ════════════════════════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-content">
+
+            <div class="content-subtabs">
+                <button class="csub active" data-csub="chapters" onclick="switchContentSubtab('chapters')"><i class="fas fa-layer-group"></i> Chapters</button>
+                <button class="csub" data-csub="lectures" onclick="switchContentSubtab('lectures')"><i class="fas fa-video"></i> Lectures</button>
+                <button class="csub" data-csub="pdfs" onclick="switchContentSubtab('pdfs')"><i class="fas fa-file-pdf"></i> PDFs</button>
+            </div>
+
+            <!-- ─── CHAPTERS ─── -->
+            <div class="content-subtab-content active" id="csubChapters">
+                <div class="panel-card">
+                    <h3><i class="fas fa-plus-circle"></i> Add Chapter</h3>
+                    <div class="form-group">
+                        <label>Select Batch</label>
+                        <select id="chapterBatch" onchange="renderChapterList()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Chapter Name</label>
+                        <input type="text" id="newChapterName" placeholder="e.g., Arithmetic" />
+                    </div>
+                    <div class="form-group">
+                        <label>Chapter Icon</label>
+                        <div class="icon-type-toggle">
+                            <button type="button" class="icon-type-btn active" data-icontype="emoji" onclick="setChapterIconType('emoji')"><i class="fas fa-icons"></i> Emoji</button>
+                            <button type="button" class="icon-type-btn" data-icontype="url" onclick="setChapterIconType('url')"><i class="fas fa-image"></i> Logo URL</button>
+                        </div>
+                        <input type="text" id="newChapterIconEmoji" placeholder="e.g., 📁 or 🧮" maxlength="4" style="margin-top:8px;" />
+                        <input type="text" id="newChapterIconUrl" placeholder="https://example.com/logo.png" style="margin-top:8px;display:none;" />
+                    </div>
+                    <button class="btn-submit" onclick="addChapter()"><i class="fas fa-plus"></i> Add Chapter</button>
+                </div>
+                <div class="panel-card">
+                    <h3><i class="fas fa-list"></i> Chapters <span id="chapterCount" style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;"></span></h3>
+                    <div id="chapterList"></div>
+                </div>
+            </div>
+
+            <!-- ─── LECTURES ─── -->
+            <div class="content-subtab-content" id="csubLectures">
+                <div class="panel-card">
+                    <h3><i class="fas fa-plus-circle"></i> Add Lecture</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Batch</label>
+                            <select id="lectureBatch" onchange="populateChapterSelect(this.value,'lectureChapter'); renderLectureList();"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Chapter</label>
+                            <select id="lectureChapter" onchange="renderLectureList()"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Lecture Name</label>
+                        <input type="text" id="newLectureName" placeholder="e.g., Introduction" />
+                    </div>
+                    <div class="form-group">
+                        <label>Video URL</label>
+                        <input type="text" id="newLectureUrl" placeholder="YouTube or MP4 link" />
+                    </div>
+                    <button class="btn-submit" onclick="addLecture()"><i class="fas fa-plus"></i> Add Lecture</button>
+                </div>
+                <div class="panel-card">
+                    <h3><i class="fas fa-list"></i> Lectures <span id="lectureCount" style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;"></span></h3>
+                    <div id="lectureList"></div>
+                </div>
+            </div>
+
+            <!-- ─── PDFS ─── -->
+            <div class="content-subtab-content" id="csubPdfs">
+                <div class="panel-card">
+                    <h3><i class="fas fa-plus-circle"></i> Add PDF</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Batch</label>
+                            <select id="pdfBatch" onchange="populateChapterSelect(this.value,'pdfChapter'); renderPdfList();"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Chapter</label>
+                            <select id="pdfChapter" onchange="renderPdfList()"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>PDF Name</label>
+                        <input type="text" id="newPdfName" placeholder="Handwritten Notes" />
+                    </div>
+                    <div class="form-group">
+                        <label>PDF URL</label>
+                        <input type="text" id="newPdfUrl" placeholder="https://example.com/notes.pdf" />
+                    </div>
+                    <button class="btn-submit" onclick="addPdf()"><i class="fas fa-plus"></i> Add PDF</button>
+                </div>
+                <div class="panel-card">
+                    <h3><i class="fas fa-list"></i> PDFs <span id="pdfCount" style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;"></span></h3>
+                    <div id="pdfList"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+        TAB 4: STUDENTS
+        ════════════════════════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-students">
+            <div class="stats-grid" id="studentStats">
+                <div class="stat-card">
+                    <div class="number" id="totalEnrollments">0</div>
+                    <div class="label">Total Enrollments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalStudents">0</div>
+                    <div class="label">Unique Students</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="mostEnrolledBatch">-</div>
+                    <div class="label">Most Enrolled Batch</div>
+                </div>
+            </div>
+            <div class="panel-card">
+                <h3><i class="fas fa-user-graduate"></i> Student List</h3>
+                <div id="studentList">
+                    <div style="color:var(--text-secondary);text-align:center;padding:30px 0;">
+                        <i class="fas fa-users" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
+                        No students enrolled yet
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+        TAB 6: NOTIFICATIONS
+        ════════════════════════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-notifications">
+            <div class="panel-card">
+                <h3><i class="fas fa-bell"></i> Send Notification to Users</h3>
+                <form id="notificationForm">
+                    <div class="form-group">
+                        <label>Notification Title</label>
+                        <input type="text" id="notifTitle" placeholder="e.g. New Course Added!" />
+                    </div>
+                    <div class="form-group">
+                        <label>Message *</label>
+                        <textarea id="notifMessage" rows="4" placeholder="Write your notification message here..." required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Icon</label>
+                            <select id="notifIcon">
+                                <option value="fa-bell">🔔 Bell</option>
+                                <option value="fa-star">⭐ Star</option>
+                                <option value="fa-rocket">🚀 Rocket</option>
+                                <option value="fa-gem">💎 Gem</option>
+                                <option value="fa-fire">🔥 Fire</option>
+                                <option value="fa-gift">🎁 Gift</option>
+                                <option value="fa-trophy">🏆 Trophy</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Send To</label>
+                            <select id="notifTarget">
+                                <option value="all">All Users</option>
+                                <option value="enrolled">Enrolled Users Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Notification</button>
+                </form>
+            </div>
+            <div class="panel-card">
+                <h3><i class="fas fa-history"></i> Notification History</h3>
+                <div id="notifHistory">
+                    <div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
+                        No notifications sent yet
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+        TAB 7: SETTINGS
+        ════════════════════════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-settings">
+            <div class="panel-card">
+                <h3><i class="fas fa-palette"></i> Theme Settings</h3>
+                <div class="form-group">
+                    <label>Theme Mode</label>
+                    <select id="themeMode" onchange="toggleTheme()">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h3><i class="fas fa-database"></i> Data Management</h3>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn-success" onclick="exportData()"><i class="fas fa-download"></i> Export All Data</button>
+                    <button class="btn-warning" onclick="importData()"><i class="fas fa-upload"></i> Import Data</button>
+                    <button class="btn-danger" onclick="resetAllData()"><i class="fas fa-trash"></i> Reset All Data</button>
+                </div>
+                <div style="margin-top:12px;font-size:0.8rem;color:var(--text-dim);">
+                    <i class="fas fa-info-circle"></i> Data is stored in your browser's localStorage.
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h3><i class="fas fa-arrow-right"></i> Batch Order / Drag & Drop</h3>
+                <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px;">Drag handles to reorder batches within each institute.</p>
+                <div id="batchOrderList"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ─── EDIT MODAL ─── -->
+    <div class="edit-modal" id="editModal">
+        <div class="modal-content">
+            <h3 id="editModalTitle">Edit Item</h3>
+            <form id="editForm">
+                <div id="editFields"></div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                    <button type="button" class="btn-cancel-edit" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── TOAST ─── -->
+    <div class="toast-modern" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Success!</span></div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        //  DATA
+        // ═══════════════════════════════════════════════════════════════
+
+        const DEFAULT_INSTITUTES = [
+            { id: 'kgs', icon: '🏛️', name: 'Khan Global Studies', subtitle: 'UPSC · STATE PCS · SSC', desc: 'Khan Sir ki structured live aur recorded classes...', tag: 'UPSC · PCS · SSC', logo: '', status: 'active' },
+            { id: 'rwa', icon: '🛡️', name: 'Rozgar With Ankit', subtitle: 'DEFENCE · POLICE · SSC GD', desc: 'Ankit Bhati Sir ki team dwara...', tag: 'Defence · Police', logo: '', status: 'active' },
+            { id: 'studyiq', icon: '📘', name: 'StudyIQ', subtitle: 'UPSC · STATE PSC · JUDICIARY', desc: 'UPSC Civil Services, State PSC aur Judiciary...', tag: 'UPSC · Judiciary', logo: '', status: 'active' },
+            { id: 'selectionway', icon: '🚂', name: 'SelectionWay', subtitle: 'SSC · RAILWAY · BANKING', desc: 'Gagan Sir ki SSC, RRB aur banking exams...', tag: 'SSC · Railway · Banking', logo: '', status: 'active' },
+            { id: 'nexttoppers', icon: '🎯', name: 'Next Toppers', subtitle: 'CBSE · CLASS 9-12', desc: 'Shobhit Nirwan, Prashant Kirad aur Digraj Singh Rajput...', tag: 'CBSE 9-12', logo: '', status: 'active' }
+        ];
+
+        const DEFAULT_BATCHES = {
+            nexttoppers: [
+                { id: 'class12', name: 'Class 12th', meta: 'CBSE · Science & Commerce', price: { original: 1499,
+                        discounted: 999 }, isFree: false, badge: '₹999/-', image: '', overview: '', overviewData: '',
+                    status: 'active', order: 0 },
+                { id: 'cuet2026', name: 'CUET 2026 Humanities', meta: 'CUET (Humanities)', price: null, isFree: true,
+                    badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active', order: 1 },
+                { id: 'class8to12', name: 'Class 8th to 12th', meta: 'Olympiad · IOQM CRASH COURSE',
+                    price: { original: 2999, discounted: 2499 }, isFree: false, badge: '₹2499/-', image: '',
+                    overview: '', overviewData: '', status: 'active', order: 2 },
+                { id: 'ioqm', name: 'IOQM - CRASH COURSE', meta: 'Olympiad', price: null, isFree: true, badge: 'FREE',
+                    image: '', overview: '', overviewData: '', status: 'active', order: 3 }
+            ],
+            kgs: [
+                { id: 'upsc2026', name: 'UPSC Prelims 2026', meta: 'GS + CSAT', price: { original: 2999,
+                        discounted: 1999 }, isFree: false, badge: '₹1999/-', image: '', overview: '',
+                    overviewData: '', status: 'active', order: 0 },
+                { id: 'ssc2026', name: 'SSC CGL 2026', meta: 'Tier 1 + Tier 2', price: null, isFree: true,
+                    badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active', order: 1 }
+            ],
+            rwa: [
+                { id: 'defence2026', name: 'Defence Exam 2026', meta: 'Airforce · NDA · Navy', price: null,
+                    isFree: true, badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active',
+                    order: 0 },
+                { id: 'police2026', name: 'Delhi Police 2026', meta: 'Constable · SI', price: { original: 999,
+                        discounted: 499 }, isFree: false, badge: '₹499/-', image: '', overview: '',
+                    overviewData: '', status: 'active', order: 1 }
+            ],
+            studyiq: [
+                { id: 'upsc2027', name: 'UPSC 2027 Foundation', meta: 'Comprehensive Course', price: { original: 4999,
+                        discounted: 3499 }, isFree: false, badge: '₹3499/-', image: '', overview: '',
+                    overviewData: '', status: 'active', order: 0 },
+                { id: 'judiciary2026', name: 'Judiciary 2026', meta: 'PCS J · Civil Judge', price: null,
+                    isFree: true, badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active',
+                    order: 1 }
+            ],
+            selectionway: [
+                { id: 'ssc2027', name: 'SSC 2027 Batch', meta: 'CGL · CHSL · MTS', price: { original: 1999,
+                        discounted: 1299 }, isFree: false, badge: '₹1299/-', image: '', overview: '',
+                    overviewData: '', status: 'active', order: 0 },
+                { id: 'banking2026', name: 'Banking 2026', meta: 'IBPS · SBI · RRB', price: null, isFree: true,
+                    badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active', order: 1 }
+            ]
+        };
+
+        const DEFAULT_CONTENT = {};
+
+        let INSTITUTES = [];
+        let BATCHES = {};
+        let COURSE_CONTENT = {};
+        let STUDENTS = [];
+        let NOTIFICATIONS = [];
+
+        let editingId = null;
+
+        // ─── Edit Modal State ───
+        let editContext = {
+            type: null, // 'chapter', 'lecture', 'pdf'
+            batchId: null,
+            chapterId: null,
+            itemId: null,
+            data: null
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        //  LOAD / SAVE
+        // ═══════════════════════════════════════════════════════════════
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('eduverse_institutes');
+                INSTITUTES = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_INSTITUTES));
+                if (!INSTITUTES || INSTITUTES.length === 0) INSTITUTES = JSON.parse(JSON.stringify(DEFAULT_INSTITUTES));
+            } catch (e) { INSTITUTES = JSON.parse(JSON.stringify(DEFAULT_INSTITUTES)); }
+
+            try {
+                const saved = localStorage.getItem('eduverse_batches');
+                BATCHES = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_BATCHES));
+                if (!BATCHES || Object.keys(BATCHES).length === 0) BATCHES = JSON.parse(JSON.stringify(DEFAULT_BATCHES));
+            } catch (e) { BATCHES = JSON.parse(JSON.stringify(DEFAULT_BATCHES)); }
+
+            try {
+                const saved = localStorage.getItem('eduverse_content');
+                COURSE_CONTENT = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+            } catch (e) { COURSE_CONTENT = JSON.parse(JSON.stringify(DEFAULT_CONTENT)); }
+
+            try {
+                const saved = localStorage.getItem('eduverse_students');
+                STUDENTS = saved ? JSON.parse(saved) : [];
+                if (!Array.isArray(STUDENTS)) STUDENTS = [];
+            } catch (e) { STUDENTS = []; }
+
+            try {
+                const saved = localStorage.getItem('eduverse_notifications');
+                NOTIFICATIONS = saved ? JSON.parse(saved) : [];
+                if (!Array.isArray(NOTIFICATIONS)) NOTIFICATIONS = [];
+            } catch (e) { NOTIFICATIONS = []; }
+        }
+
+        function saveData() {
+            localStorage.setItem('eduverse_institutes', JSON.stringify(INSTITUTES));
+            localStorage.setItem('eduverse_batches', JSON.stringify(BATCHES));
+            localStorage.setItem('eduverse_content', JSON.stringify(COURSE_CONTENT));
+            localStorage.setItem('eduverse_students', JSON.stringify(STUDENTS));
+            localStorage.setItem('eduverse_notifications', JSON.stringify(NOTIFICATIONS));
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  TOAST
+        // ═══════════════════════════════════════════════════════════════
+
+        function showToast(msg, duration = 2500) {
+            document.getElementById('toastMsg').textContent = msg;
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  EDIT MODAL
+        // ═══════════════════════════════════════════════════════════════
+
+        function openEditModal(title, fields, onSave) {
+            const modal = document.getElementById('editModal');
+            document.getElementById('editModalTitle').textContent = title;
+            
+            let fieldsHtml = '';
+            for (const [key, field] of Object.entries(fields)) {
+                fieldsHtml += `
+                    <div class="form-group">
+                        <label>${field.label}</label>
+                        <input type="${field.type || 'text'}" id="edit_${key}" value="${field.value || ''}" placeholder="${field.placeholder || ''}" />
+                    </div>
+                `;
+            }
+            document.getElementById('editFields').innerHTML = fieldsHtml;
+            
+            document.getElementById('editForm').onsubmit = (e) => {
+                e.preventDefault();
+                const values = {};
+                for (const key of Object.keys(fields)) {
+                    values[key] = document.getElementById('edit_${key}').value.trim();
+                }
+                onSave(values);
+                closeEditModal();
+            };
+            
+            modal.classList.add('open');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('open');
+            document.getElementById('editForm').onsubmit = null;
+        }
+
+        // Click outside to close
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('editModal')) closeEditModal();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  TAB SWITCHING
+        // ═══════════════════════════════════════════════════════════════
+
+        document.querySelectorAll('.admin-tabs .tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tabs .tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                const target = document.getElementById('tab-' + tab.dataset.tab);
+                if (target) target.classList.add('active');
+
+                if (tab.dataset.tab === 'students') refreshStudents();
+                if (tab.dataset.tab === 'batches') renderAllBatches();
+                if (tab.dataset.tab === 'content') populateContentBatchSelects();
+                if (tab.dataset.tab === 'notifications') { renderNotificationHistory(); populateNotifTargetSelect(); }
+                if (tab.dataset.tab === 'settings') renderBatchOrderList();
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  1️⃣ INSTITUTE MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════
+
+        function resetInstituteForm() {
+            document.getElementById('instituteForm').reset();
+            document.getElementById('logoPreview').innerHTML = '<span>No logo uploaded</span>';
+            editingId = null;
+            document.getElementById('formTitle').textContent = 'Add New Institute';
+            document.getElementById('submitBtnText').textContent = 'Add Institute';
+            document.querySelector('#instituteForm .btn-submit').innerHTML = '<i class="fas fa-plus"></i> Add Institute';
+        }
+
+        document.getElementById('instLogo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    document.getElementById('logoPreview').innerHTML =
+                        `<img src="${ev.target.result}" alt="Logo Preview" /><span>${file.name}</span>`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('instituteForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('instName').value.trim();
+            if (!name) { showToast('⚠️ Institute name is required!', 2000); return; }
+
+            const icon = '🏫';
+            const tag = document.getElementById('instTag').value.trim() || 'Institute';
+            const subtitle = document.getElementById('instSubtitle').value.trim() || 'Learn with us';
+            const desc = document.getElementById('instDesc').value.trim() || 'Quality education for all.';
+            const status = document.getElementById('instStatus').value;
+
+            let logo = '';
+            const file = document.getElementById('instLogo').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    logo = ev.target.result;
+                    saveInstitute(name, icon, tag, subtitle, desc, logo, status);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                saveInstitute(name, icon, tag, subtitle, desc, logo, status);
+            }
+        });
+
+        function saveInstitute(name, icon, tag, subtitle, desc, logo, status) {
+            if (editingId) {
+                const idx = INSTITUTES.findIndex(i => i.id === editingId);
+                if (idx !== -1) {
+                    INSTITUTES[idx] = { ...INSTITUTES[idx], name, icon, tag, subtitle, desc, logo: logo || INSTITUTES[idx]
+                            .logo, status };
+                    showToast(`✏️ "${name}" updated!`, 2000);
+                }
+                editingId = null;
+            } else {
+                const newId = name.toLowerCase().replace(/\s+/g, '') + Date.now();
+                INSTITUTES.push({ id: newId, name, icon, tag, subtitle, desc, logo, status });
+                BATCHES[newId] = [];
+                showToast(`✅ "${name}" added!`, 2000);
+            }
+            saveData();
+            renderInstitutes();
+            populateInstituteSelects();
+            resetInstituteForm();
+        }
+
+        function editInstitute(id) {
+            const inst = INSTITUTES.find(i => i.id === id);
+            if (!inst) return;
+            editingId = id;
+            document.getElementById('instName').value = inst.name;
+            document.getElementById('instTag').value = inst.tag || '';
+            document.getElementById('instSubtitle').value = inst.subtitle || '';
+            document.getElementById('instDesc').value = inst.desc || '';
+            document.getElementById('instStatus').value = inst.status || 'active';
+            if (inst.logo) {
+                document.getElementById('logoPreview').innerHTML =
+                    `<img src="${inst.logo}" alt="Logo" /><span>Current logo</span>`;
+            }
+            document.getElementById('formTitle').textContent = 'Edit Institute';
+            document.getElementById('submitBtnText').textContent = 'Update Institute';
+            document.querySelector('#instituteForm .btn-submit').innerHTML = '<i class="fas fa-save"></i> Update Institute';
+            document.querySelector('[data-tab="institutes"]').click();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteInstitute(id) {
+            const inst = INSTITUTES.find(i => i.id === id);
+            if (!inst) return;
+            if (confirm(`Delete "${inst.name}" and all its batches?`)) {
+                INSTITUTES = INSTITUTES.filter(i => i.id !== id);
+                delete BATCHES[id];
+                saveData();
+                renderInstitutes();
+                populateInstituteSelects();
+                showToast(`🗑️ "${inst.name}" deleted!`, 2000);
+            }
+        }
+
+        function toggleInstituteStatus(id) {
+            const inst = INSTITUTES.find(i => i.id === id);
+            if (inst) {
+                inst.status = inst.status === 'active' ? 'inactive' : 'active';
+                saveData();
+                renderInstitutes();
+                showToast(`📌 "${inst.name}" ${inst.status === 'active' ? 'activated' : 'deactivated'}`, 1500);
+            }
+        }
+
+        function renderInstitutes() {
+            const grid = document.getElementById('instituteGrid');
+            document.getElementById('instCount').textContent = `(${INSTITUTES.length})`;
+            grid.innerHTML = '';
+            if (INSTITUTES.length === 0) {
+                grid.innerHTML =
+                    `<div style="grid-column:1/-1;text-align:center;color:var(--text-secondary);padding:30px 0;">
+                    <i class="fas fa-plus-circle" style="font-size:2rem;display:block;margin-bottom:10px;color:var(--primary);"></i>
+                    No institutes yet
+                </div>`;
+                return;
+            }
+            INSTITUTES.forEach(inst => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                const batches = BATCHES[inst.id] || [];
+                div.innerHTML = `
+                    <div class="item-top">
+                        ${inst.logo ? `<img src="${inst.logo}" style="width:40px;height:40px;border-radius:10px;object-fit:cover;" />` : `<span class="icon-big">🏫</span>`}
+                        <span class="badge-status ${inst.status === 'active' ? 'active' : 'inactive'}">${inst.status || 'active'}</span>
+                    </div>
+                    <h4>${inst.name}</h4>
+                    <div class="sub">${inst.subtitle || ''} · ${batches.length} batches</div>
+                    <div class="item-actions">
+                        <button class="btn-warning" onclick="editInstitute('${inst.id}')"><i class="fas fa-pen"></i> Edit</button>
+                        <button class="btn-success" onclick="toggleInstituteStatus('${inst.id}')"><i class="fas fa-${inst.status === 'active' ? 'pause' : 'play'}"></i> ${inst.status === 'active' ? 'Deactivate' : 'Activate'}</button>
+                        <button class="btn-danger" onclick="deleteInstitute('${inst.id}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  2️⃣ BATCH MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════
+
+        function populateInstituteSelects() {
+            const selects = ['batchInstitute'];
+            selects.forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                sel.innerHTML = '';
+                INSTITUTES.forEach(inst => {
+                    const opt = document.createElement('option');
+                    opt.value = inst.id;
+                    opt.textContent = inst.name;
+                    sel.appendChild(opt);
+                });
+            });
+            document.getElementById('batchInstitute').dispatchEvent(new Event('change'));
+            populateContentBatchSelects();
+        }
+
+        document.getElementById('batchType').addEventListener('change', function() {
+            const priceFields = document.getElementById('priceFields');
+            priceFields.style.display = this.value === 'paid' ? 'grid' : 'none';
+        });
+
+        document.getElementById('batchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const instId = document.getElementById('batchInstitute').value;
+            const name = document.getElementById('batchName').value.trim();
+            if (!instId || !name) { showToast('⚠️ Institute and Batch name required!', 2000); return; }
+
+            const meta = document.getElementById('batchMeta').value.trim() || 'Course';
+            const isFree = document.getElementById('batchType').value === 'free';
+            const original = parseInt(document.getElementById('batchOriginalPrice').value) || 0;
+            const discounted = parseInt(document.getElementById('batchDiscountedPrice').value) || 0;
+            const image = document.getElementById('batchImage').value.trim() || '';
+            const overview = document.getElementById('batchOverview').value.trim() || '';
+            const status = document.getElementById('batchStatus').value;
+
+            const batch = {
+                id: name.toLowerCase().replace(/\s+/g, '') + Date.now(),
+                name,
+                meta,
+                isFree,
+                price: isFree ? null : { original, discounted },
+                badge: isFree ? 'FREE' : `₹${discounted}/-`,
+                image,
+                overview,
+                overviewData: overview,
+                status: status,
+                order: (BATCHES[instId] || []).length
+            };
+
+            if (!BATCHES[instId]) BATCHES[instId] = [];
+            BATCHES[instId].push(batch);
+            saveData();
+            renderAllBatches();
+            renderInstitutes();
+            document.getElementById('batchForm').reset();
+            document.getElementById('priceFields').style.display = 'grid';
+            showToast(`✅ "${name}" added to batch!`, 2000);
+        });
+
+        function renderAllBatches() {
+            const container = document.getElementById('allBatchesList');
+            let total = 0;
+            let html = '';
+            for (const [instId, batches] of Object.entries(BATCHES)) {
+                const inst = INSTITUTES.find(i => i.id === instId);
+                if (!inst || batches.length === 0) continue;
+                total += batches.length;
+                html += `<div style="margin-bottom:12px;">
+                    <h4 style="color:var(--primary);font-size:0.9rem;">${inst.name}</h4>
+                    ${batches.map((b, idx) => `
+                        <div class="batch-item-list">
+                            <div class="info">
+                                <div class="name">${b.name} ${b.isFree ? '🆓' : '💰'} 
+                                    <span style="font-size:0.6rem;color:${b.status === 'active' ? 'var(--success)' : 'var(--danger)'};">(${b.status || 'active'})</span>
+                                </div>
+                                <div class="meta">${b.meta || ''} ${b.isFree ? 'FREE' : `₹${b.price?.discounted || ''}`}</div>
+                                ${b.image ? `<div style="font-size:0.6rem;color:var(--text-dim);"><i class="fas fa-image"></i> Image set</div>` : ''}
+                                ${b.overview ? `<div style="font-size:0.6rem;color:var(--success);"><i class="fas fa-check-circle"></i> Overview set</div>` : ''}
+                            </div>
+                            <div class="actions">
+                                <button onclick="editBatch('${instId}','${b.id}')" class="btn-warning"><i class="fas fa-pen"></i> Edit</button>
+                                <button onclick="toggleBatchStatus('${instId}','${b.id}')" class="btn-success"><i class="fas fa-${b.status === 'active' ? 'pause' : 'play'}"></i></button>
+                                <button onclick="deleteBatch('${instId}','${b.id}')" class="btn-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+            document.getElementById('batchCount').textContent = `(${total})`;
+            container.innerHTML = html || '<div style="color:var(--text-secondary);text-align:center;padding:30px 0;">No batches yet. Add one above!</div>';
+            populateContentBatchSelects();
+        }
+
+        function toggleBatchStatus(instId, batchId) {
+            const batches = BATCHES[instId] || [];
+            const batch = batches.find(b => b.id === batchId);
+            if (batch) {
+                batch.status = batch.status === 'active' ? 'inactive' : 'active';
+                saveData();
+                renderAllBatches();
+                renderInstitutes();
+                showToast(`📌 "${batch.name}" ${batch.status === 'active' ? 'activated' : 'deactivated'}`, 1500);
+            }
+        }
+
+        function editBatch(instId, batchId) {
+            const batches = BATCHES[instId] || [];
+            const batch = batches.find(b => b.id === batchId);
+            if (!batch) return;
+
+            document.querySelector('[data-tab="batches"]').click();
+
+            document.getElementById('batchInstitute').value = instId;
+            document.getElementById('batchName').value = batch.name;
+            document.getElementById('batchMeta').value = batch.meta || '';
+            document.getElementById('batchType').value = batch.isFree ? 'free' : 'paid';
+            document.getElementById('batchOriginalPrice').value = batch.price?.original || '';
+            document.getElementById('batchDiscountedPrice').value = batch.price?.discounted || '';
+            document.getElementById('batchImage').value = batch.image || '';
+            document.getElementById('batchOverview').value = batch.overview || '';
+            document.getElementById('batchStatus').value = batch.status || 'active';
+
+            const btn = document.querySelector('#batchForm .btn-submit');
+            btn.innerHTML = '<i class="fas fa-save"></i> Update Batch';
+            btn.onclick = (e) => {
+                e.preventDefault();
+                const name = document.getElementById('batchName').value.trim();
+                if (!name) { showToast('⚠️ Batch name required!', 2000); return; }
+                const idx = BATCHES[instId].findIndex(b => b.id === batchId);
+                if (idx !== -1) {
+                    BATCHES[instId][idx] = {
+                        ...BATCHES[instId][idx],
+                        name,
+                        meta: document.getElementById('batchMeta').value.trim() || 'Course',
+                        isFree: document.getElementById('batchType').value === 'free',
+                        price: document.getElementById('batchType').value === 'free' ? null : {
+                            original: parseInt(document.getElementById('batchOriginalPrice').value) || 0,
+                            discounted: parseInt(document.getElementById('batchDiscountedPrice').value) || 0
+                        },
+                        badge: document.getElementById('batchType').value === 'free' ? 'FREE' :
+                            `₹${parseInt(document.getElementById('batchDiscountedPrice').value) || 0}/-`,
+                        image: document.getElementById('batchImage').value.trim() || '',
+                        overview: document.getElementById('batchOverview').value.trim() || '',
+                        overviewData: document.getElementById('batchOverview').value.trim() || '',
+                        status: document.getElementById('batchStatus').value
+                    };
+                    saveData();
+                    renderAllBatches();
+                    renderInstitutes();
+                    showToast(`✅ "${name}" updated!`, 2000);
+                    btn.innerHTML = '<i class="fas fa-plus"></i> Add Batch';
+                    btn.onclick = null;
+                    document.getElementById('batchForm').reset();
+                    document.getElementById('priceFields').style.display = 'grid';
+                }
+            };
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteBatch(instId, batchId) {
+            if (!confirm('Delete this batch?')) return;
+            BATCHES[instId] = (BATCHES[instId] || []).filter(b => b.id !== batchId);
+            saveData();
+            renderAllBatches();
+            renderInstitutes();
+            showToast('🗑️ Batch deleted!', 1500);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  3️⃣ COURSE CONTENT EDITOR (Chapters → Lectures / PDFs)
+        // ═══════════════════════════════════════════════════════════════
+
+        function switchContentSubtab(tab) {
+            document.querySelectorAll('.content-subtabs .csub').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.content-subtabs .csub[data-csub="${tab}"]`).classList.add('active');
+            document.querySelectorAll('.content-subtab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('csub' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+        }
+
+        function getAllBatchesFlat() {
+            const flat = [];
+            for (const [instId, batches] of Object.entries(BATCHES)) {
+                const inst = INSTITUTES.find(i => i.id === instId);
+                (batches || []).forEach(b => flat.push({ id: b.id, name: `${inst ? inst.name + ' - ' : ''}${b.name}` }));
+            }
+            return flat;
+        }
+
+        function populateContentBatchSelects() {
+            const flat = getAllBatchesFlat();
+            ['chapterBatch', 'lectureBatch', 'pdfBatch'].forEach(selId => {
+                const sel = document.getElementById(selId);
+                if (!sel) return;
+                const current = sel.value;
+                sel.innerHTML = '<option value="">-- Select Batch --</option>' +
+                    flat.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+                if (flat.some(b => b.id === current)) sel.value = current;
+            });
+            populateChapterSelect(document.getElementById('lectureBatch')?.value || '', 'lectureChapter');
+            populateChapterSelect(document.getElementById('pdfBatch')?.value || '', 'pdfChapter');
+            renderChapterList();
+            renderLectureList();
+            renderPdfList();
+        }
+
+        function populateChapterSelect(batchId, selectId) {
+            const sel = document.getElementById(selectId);
+            if (!sel) return;
+            const current = sel.value;
+            const folders = (COURSE_CONTENT[batchId]?.folders) || [];
+            sel.innerHTML = '<option value="">-- Select Chapter --</option>' +
+                folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+            if (folders.some(f => f.id === current)) sel.value = current;
+        }
+
+        // ─── Chapter CRUD ──────────────────────────────────────────
+        let chapterIconType = 'emoji';
+        function setChapterIconType(type) {
+            chapterIconType = type;
+            document.querySelectorAll('.icon-type-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.icon-type-btn[data-icontype="${type}"]`).classList.add('active');
+            document.getElementById('newChapterIconEmoji').style.display = type === 'emoji' ? 'block' : 'none';
+            document.getElementById('newChapterIconUrl').style.display = type === 'url' ? 'block' : 'none';
+        }
+
+        function addChapter() {
+            const batchId = document.getElementById('chapterBatch').value;
+            const nameInput = document.getElementById('newChapterName');
+            const name = nameInput.value.trim();
+            const emojiInput = document.getElementById('newChapterIconEmoji');
+            const urlInput = document.getElementById('newChapterIconUrl');
+
+            if (!batchId) { showToast('⚠️ Select a batch first!', 1500); return; }
+            if (!name) { showToast('⚠️ Enter a chapter name!', 1500); return; }
+
+            let icon = '📁';
+            let iconUrl = '';
+            if (chapterIconType === 'url' && urlInput.value.trim()) {
+                iconUrl = urlInput.value.trim();
+            } else if (emojiInput.value.trim()) {
+                icon = emojiInput.value.trim();
+            }
+
+            if (!COURSE_CONTENT[batchId]) COURSE_CONTENT[batchId] = { folders: [] };
+            if (!COURSE_CONTENT[batchId].folders) COURSE_CONTENT[batchId].folders = [];
+            COURSE_CONTENT[batchId].folders.push({ id: 'ch_' + Date.now(), name, icon, iconUrl, lectures: [], pdfs: [] });
+
+            saveData();
+            nameInput.value = '';
+            emojiInput.value = '';
+            urlInput.value = '';
+            renderChapterList();
+            populateChapterSelect(document.getElementById('lectureBatch').value, 'lectureChapter');
+            populateChapterSelect(document.getElementById('pdfBatch').value, 'pdfChapter');
+            showToast(`✅ Chapter "${name}" added!`, 1500);
+        }
+
+        // ─── ✨ EDIT CHAPTER ───
+        function editChapter(batchId, chapterId) {
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            if (!folder) return;
+
+            openEditModal('Edit Chapter', {
+                name: { label: 'Chapter Name', value: folder.name, placeholder: 'e.g., Arithmetic' },
+                icon: { label: 'Emoji Icon', value: folder.icon || '📁', placeholder: '📁' },
+                iconUrl: { label: 'Icon URL (leave empty to use emoji)', value: folder.iconUrl || '', placeholder: 'https://example.com/icon.png' }
+            }, (values) => {
+                if (values.name) folder.name = values.name;
+                if (values.iconUrl) { folder.iconUrl = values.iconUrl; folder.icon = ''; }
+                else if (values.icon) { folder.icon = values.icon; folder.iconUrl = ''; }
+                saveData();
+                renderChapterList();
+                populateChapterSelect(document.getElementById('lectureBatch').value, 'lectureChapter');
+                populateChapterSelect(document.getElementById('pdfBatch').value, 'pdfChapter');
+                showToast('✅ Chapter updated!', 1500);
+            });
+        }
+
+        function deleteChapter(batchId, chapterId) {
+            if (!confirm('Delete this chapter and all its lectures/PDFs?')) return;
+            const folders = COURSE_CONTENT[batchId]?.folders || [];
+            const idx = folders.findIndex(f => f.id === chapterId);
+            if (idx > -1) folders.splice(idx, 1);
+            saveData();
+            renderChapterList();
+            populateChapterSelect(document.getElementById('lectureBatch').value, 'lectureChapter');
+            populateChapterSelect(document.getElementById('pdfBatch').value, 'pdfChapter');
+            renderLectureList();
+            renderPdfList();
+            showToast('🗑️ Chapter deleted!', 1500);
+        }
+
+        function renderChapterList() {
+            const container = document.getElementById('chapterList');
+            const countEl = document.getElementById('chapterCount');
+            if (!container) return;
+            const batchId = document.getElementById('chapterBatch')?.value;
+            if (!batchId) {
+                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">Select a batch to view chapters</div>`;
+                countEl.textContent = '';
+                return;
+            }
+            const folders = COURSE_CONTENT[batchId]?.folders || [];
+            countEl.textContent = `(${folders.length})`;
+            if (folders.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
+                    <i class="fas fa-plus-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
+                    No chapters yet. Add your first chapter above!
+                </div>`;
+                return;
+            }
+            container.innerHTML = folders.map(f => `
+                <div class="batch-item-list">
+                    <div class="info">
+                        <div class="name">${f.iconUrl ? `<img src="${f.iconUrl}" style="width:18px;height:18px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:2px;">` : (f.icon || '📁')} ${f.name}</div>
+                        <div class="meta">${(f.lectures || []).length} lectures · ${(f.pdfs || []).length} PDFs</div>
+                    </div>
+                    <div class="actions">
+                        <button onclick="editChapter('${batchId}','${f.id}')" class="btn-edit-item"><i class="fas fa-pen"></i> Edit</button>
+                        <button onclick="deleteChapter('${batchId}','${f.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ─── Lecture CRUD ──────────────────────────────────────────
+        function addLecture() {
+            const batchId = document.getElementById('lectureBatch').value;
+            const chapterId = document.getElementById('lectureChapter').value;
+            const nameInput = document.getElementById('newLectureName');
+            const urlInput = document.getElementById('newLectureUrl');
+            const name = nameInput.value.trim();
+
+            if (!batchId) { showToast('⚠️ Select a batch!', 1500); return; }
+            if (!chapterId) { showToast('⚠️ Select a chapter!', 1500); return; }
+            if (!name) { showToast('⚠️ Enter a lecture name!', 1500); return; }
+
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            if (!folder) { showToast('⚠️ Chapter not found!', 1500); return; }
+            if (!folder.lectures) folder.lectures = [];
+            folder.lectures.push({
+                id: 'lec_' + Date.now(),
+                name,
+                url: urlInput.value.trim()
+            });
+
+            saveData();
+            nameInput.value = '';
+            urlInput.value = '';
+            renderLectureList();
+            renderChapterList();
+            showToast(`✅ Lecture "${name}" added!`, 1500);
+        }
+
+        // ─── ✨ EDIT LECTURE ───
+        function editLecture(batchId, chapterId, lectureId) {
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            if (!folder) return;
+            const lecture = (folder.lectures || []).find(l => l.id === lectureId);
+            if (!lecture) return;
+
+            openEditModal('Edit Lecture', {
+                name: { label: 'Lecture Name', value: lecture.name, placeholder: 'e.g., Introduction' },
+                url: { label: 'Video URL', value: lecture.url || '', placeholder: 'https://youtube.com/...' }
+            }, (values) => {
+                if (values.name) lecture.name = values.name;
+                lecture.url = values.url || '';
+                saveData();
+                renderLectureList();
+                renderChapterList();
+                showToast('✅ Lecture updated!', 1500);
+            });
+        }
+
+        function deleteLecture(batchId, chapterId, lectureId) {
+            if (!confirm('Delete this lecture?')) return;
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            if (!folder) return;
+            folder.lectures = (folder.lectures || []).filter(l => l.id !== lectureId);
+            saveData();
+            renderLectureList();
+            renderChapterList();
+            showToast('🗑️ Lecture deleted!', 1500);
+        }
+
+        function renderLectureList() {
+            const container = document.getElementById('lectureList');
+            const countEl = document.getElementById('lectureCount');
+            if (!container) return;
+            const batchId = document.getElementById('lectureBatch')?.value;
+            const chapterId = document.getElementById('lectureChapter')?.value;
+            if (!batchId || !chapterId) {
+                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">Select a batch & chapter to view lectures</div>`;
+                countEl.textContent = '';
+                return;
+            }
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            const lectures = folder?.lectures || [];
+            countEl.textContent = `(${lectures.length})`;
+            if (lectures.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
+                    <i class="fas fa-plus-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
+                    No lectures yet. Add your first lecture above!
+                </div>`;
+                return;
+            }
+            container.innerHTML = lectures.map(l => `
+                <div class="batch-item-list">
+                    <div class="info">
+                        <div class="name"><i class="fas fa-video"></i> ${l.name}</div>
+                        <div class="meta">${l.url || 'No URL set'}</div>
+                    </div>
+                    <div class="actions">
+                        <button onclick="editLecture('${batchId}','${chapterId}','${l.id}')" class="btn-edit-item"><i class="fas fa-pen"></i> Edit</button>
+                        <button onclick="deleteLecture('${batchId}','${chapterId}','${l.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ─── PDF CRUD ──────────────────────────────────────────
+        function addPdf() {
+            const batchId = document.getElementById('pdfBatch').value;
+            const chapterId = document.getElementById('pdfChapter').value;
+            const nameInput = document.getElementById('newPdfName');
+            const urlInput = document.getElementById('newPdfUrl');
+            const name = nameInput.value.trim();
+
+            if (!batchId) { showToast('⚠️ Select a batch!', 1500); return; }
+            if (!chapterId) { showToast('⚠️ Select a chapter!', 1500); return; }
+            if (!name) { showToast('⚠️ Enter a PDF name!', 1500); return; }
+
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            if (!folder) { showToast('⚠️ Chapter not found!', 1500); return; }
+            if (!folder.pdfs) folder.pdfs = [];
+            folder.pdfs.push({
+                id: 'pdf_' + Date.now(),
+                name,
+                url: urlInput.value.trim()
+            });
+
+            saveData();
+            nameInput.value = '';
+            urlInput.value = '';
+            renderPdfList();
+            renderChapterList();
+            showToast(`✅ PDF "${name}" added!`, 1500);
+        }
+
+        // ─── ✨ EDIT PDF ───
+        function editPdf(batchId, chapterId, pdfId) {
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            if (!folder) return;
+            const pdf = (folder.pdfs || []).find(p => p.id === pdfId);
+            if (!pdf) return;
+
+            openEditModal('Edit PDF', {
+                name: { label: 'PDF Name', value: pdf.name, placeholder: 'Handwritten Notes' },
+                url: { label: 'PDF URL', value: pdf.url || '', placeholder: 'https://example.com/notes.pdf' }
+            }, (values) => {
+                if (values.name) pdf.name = values.name;
+                pdf.url = values.url || '';
+                saveData();
+                renderPdfList();
+                renderChapterList();
+                showToast('✅ PDF updated!', 1500);
+            });
+        }
+
+        function deletePdf(batchId, chapterId, pdfId) {
+            if (!confirm('Delete this PDF?')) return;
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            if (!folder) return;
+            folder.pdfs = (folder.pdfs || []).filter(p => p.id !== pdfId);
+            saveData();
+            renderPdfList();
+            renderChapterList();
+            showToast('🗑️ PDF deleted!', 1500);
+        }
+
+        function renderPdfList() {
+            const container = document.getElementById('pdfList');
+            const countEl = document.getElementById('pdfCount');
+            if (!container) return;
+            const batchId = document.getElementById('pdfBatch')?.value;
+            const chapterId = document.getElementById('pdfChapter')?.value;
+            if (!batchId || !chapterId) {
+                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">Select a batch & chapter to view PDFs</div>`;
+                countEl.textContent = '';
+                return;
+            }
+            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
+            const pdfs = folder?.pdfs || [];
+            countEl.textContent = `(${pdfs.length})`;
+            if (pdfs.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
+                    <i class="fas fa-plus-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
+                    No PDFs yet. Add your first PDF above!
+                </div>`;
+                return;
+            }
+            container.innerHTML = pdfs.map(p => `
+                <div class="batch-item-list">
+                    <div class="info">
+                        <div class="name"><i class="fas fa-file-pdf"></i> ${p.name}</div>
+                        <div class="meta">${p.url || 'No URL set'}</div>
+                    </div>
+                    <div class="actions">
+                        <button onclick="editPdf('${batchId}','${chapterId}','${p.id}')" class="btn-edit-item"><i class="fas fa-pen"></i> Edit</button>
+                        <button onclick="deletePdf('${batchId}','${chapterId}','${p.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  4️⃣ STUDENT MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════
+
+        function getRealStudents() {
+            try {
+                const list = JSON.parse(localStorage.getItem('eduverse_students') || '[]');
+                return Array.isArray(list) ? list : [];
+            } catch (e) { return []; }
+        }
+
+        function refreshStudents() {
+            const students = getRealStudents();
+            const totalEnrollments = students.reduce((sum, s) => sum + (Array.isArray(s.enrollments) ? s.enrollments.length : 0), 0);
+
+            const batchCounts = {};
+            students.forEach(s => (s.enrollments || []).forEach(en => {
+                batchCounts[en.batchName] = (batchCounts[en.batchName] || 0) + 1;
+            }));
+            let mostEnrolled = '-';
+            let maxCount = 0;
+            for (const [name, count] of Object.entries(batchCounts)) {
+                if (count > maxCount) { maxCount = count; mostEnrolled = name; }
+            }
+
+            document.getElementById('totalEnrollments').textContent = totalEnrollments;
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('mostEnrolledBatch').textContent = mostEnrolled;
+
+            const container = document.getElementById('studentList');
+            if (students.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:30px 0;">
+                    <i class="fas fa-users" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
+                    No students yet. They'll show up here as soon as they open the app.
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = students.slice().reverse().map(s => {
+                const enrollments = s.enrollments || [];
+                const enrollText = enrollments.length > 0
+                    ? enrollments.map(e => e.batchName).join(', ')
+                    : 'Not enrolled in any batch yet';
+                return `
+                <div class="batch-item-list">
+                    <div class="info">
+                        <div class="name"><i class="fas fa-user-circle"></i> ${s.name || 'Unnamed'}</div>
+                        <div class="meta"><i class="fas fa-phone" style="font-size:0.65rem;"></i> ${s.phone || 'N/A'} &nbsp;·&nbsp; Joined: ${s.joinedAt || 'N/A'}</div>
+                        <div class="meta">📚 ${enrollText}</div>
+                    </div>
+                    <div class="actions">
+                        <button onclick="openMessageStudent('${s.id}')" class="btn-submit" style="padding:6px 14px;font-size:0.7rem;"><i class="fas fa-paper-plane"></i> Message</button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function openMessageStudent(studentId) {
+            const students = getRealStudents();
+            const student = students.find(s => s.id === studentId);
+            if (!student) { showToast('⚠️ Student not found!', 1500); return; }
+
+            document.querySelector('.tab[data-tab="notifications"]').click();
+
+            setTimeout(() => {
+                populateNotifTargetSelect();
+                document.getElementById('notifTarget').value = studentId;
+                document.getElementById('notifTitle').value = `Hi ${student.name}`;
+                document.getElementById('notifMessage').focus();
+                showToast(`✍️ Composing a message for ${student.name}`, 2000);
+            }, 100);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  6️⃣ NOTIFICATIONS
+        // ═══════════════════════════════════════════════════════════════
+
+        function populateNotifTargetSelect() {
+            const sel = document.getElementById('notifTarget');
+            if (!sel) return;
+            const current = sel.value;
+            const students = getRealStudents();
+            let html = `<option value="all">All Users</option><option value="enrolled">Enrolled Users Only</option>`;
+            if (students.length > 0) {
+                html += `<optgroup label="Message a specific student">`;
+                html += students.map(s => `<option value="${s.id}">${s.name || 'Unnamed'} (${s.phone || 'N/A'})</option>`).join('');
+                html += `</optgroup>`;
+            }
+            sel.innerHTML = html;
+            if ([...sel.options].some(o => o.value === current)) sel.value = current;
+        }
+
+        document.getElementById('notificationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('notifTitle').value.trim() || 'New Update';
+            const message = document.getElementById('notifMessage').value.trim();
+            const icon = document.getElementById('notifIcon').value;
+            const targetSelect = document.getElementById('notifTarget');
+            const target = targetSelect.value;
+            const targetLabel = targetSelect.options[targetSelect.selectedIndex]?.text || target;
+
+            if (!message) { showToast('⚠️ Message is required!', 2000); return; }
+
+            const notif = {
+                id: Date.now(),
+                icon: icon,
+                msg: message,
+                title: title,
+                target: target,
+                time: new Date().toLocaleString(),
+                read: false
+            };
+
+            NOTIFICATIONS.unshift(notif);
+            if (NOTIFICATIONS.length > 100) NOTIFICATIONS = NOTIFICATIONS.slice(0, 100);
+            saveData();
+            renderNotificationHistory();
+            document.getElementById('notificationForm').reset();
+            populateNotifTargetSelect();
+            showToast(`📨 Notification sent to ${targetLabel}!`, 2000);
+        });
+
+        function deleteNotification(id) {
+            if (!confirm('Delete this notification?')) return;
+            NOTIFICATIONS = NOTIFICATIONS.filter(n => n.id !== id);
+            saveData();
+            renderNotificationHistory();
+            showToast('🗑️ Notification deleted!', 1500);
+        }
+
+        function renderNotificationHistory() {
+            const container = document.getElementById('notifHistory');
+            if (NOTIFICATIONS.length === 0) {
+                container.innerHTML =
+                    `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">No notifications sent yet</div>`;
+                return;
+            }
+            container.innerHTML = NOTIFICATIONS.map(n => `
+                <div class="batch-item-list">
+                    <div class="info">
+                        <div class="name"><i class="fas ${n.icon}"></i> ${n.title || 'Notification'}</div>
+                        <div class="meta">${n.msg} <span style="color:var(--text-dim);font-size:0.7rem;">· ${n.time}</span></div>
+                    </div>
+                    <div class="actions">
+                        <button onclick="deleteNotification(${n.id})" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  7️⃣ SETTINGS
+        // ═══════════════════════════════════════════════════════════════
+
+        function toggleTheme() {
+            const mode = document.getElementById('themeMode').value;
+            if (mode === 'light') {
+                document.documentElement.style.setProperty('--bg-primary', '#f0f4ff');
+                document.documentElement.style.setProperty('--bg-secondary', '#e8ecf8');
+                document.documentElement.style.setProperty('--text', '#1a1a2e');
+                document.documentElement.style.setProperty('--text-secondary', '#555577');
+                document.documentElement.style.setProperty('--text-dim', '#8888aa');
+                document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.5)');
+                document.documentElement.style.setProperty('--glass-border', 'rgba(0,0,0,0.08)');
+                document.documentElement.style.setProperty('--border', 'rgba(0,0,0,0.08)');
+            } else {
+                document.documentElement.style.setProperty('--bg-primary', '#0a0e1a');
+                document.documentElement.style.setProperty('--bg-secondary', '#111827');
+                document.documentElement.style.setProperty('--text', '#f1f5f9');
+                document.documentElement.style.setProperty('--text-secondary', '#94a3b8');
+                document.documentElement.style.setProperty('--text-dim', '#64748b');
+                document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.03)');
+                document.documentElement.style.setProperty('--glass-border', 'rgba(255,255,255,0.06)');
+                document.documentElement.style.setProperty('--border', 'rgba(255,255,255,0.06)');
+            }
+            showToast(`🎨 Theme changed to ${mode}`, 1500);
+        }
+
+        function renderBatchOrderList() {
+            const container = document.getElementById('batchOrderList');
+            let html = '';
+            for (const [instId, batches] of Object.entries(BATCHES)) {
+                const inst = INSTITUTES.find(i => i.id === instId);
+                if (!inst || batches.length === 0) continue;
+                html += `<div style="margin-bottom:12px;">
+                    <h4 style="color:var(--primary);font-size:0.9rem;">${inst.name}</h4>
+                    ${batches.sort((a,b) => (a.order || 0) - (b.order || 0)).map((b, idx) => `
+                        <div class="batch-item-list" draggable="true" data-inst="${instId}" data-batch="${b.id}" data-order="${idx}">
+                            <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
+                            <div class="info">
+                                <div class="name">${b.name} <span style="font-size:0.6rem;color:${b.status === 'active' ? 'var(--success)' : 'var(--danger)'};">(${b.status || 'active'})</span></div>
+                                <div class="meta">${b.meta || ''}</div>
+                            </div>
+                            <span style="font-size:0.6rem;color:var(--text-dim);">Order: ${idx + 1}</span>
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+            container.innerHTML = html || '<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">No batches to reorder</div>';
+
+            let dragItem = null;
+            container.querySelectorAll('[draggable="true"]').forEach(el => {
+                el.addEventListener('dragstart', (e) => {
+                    dragItem = el;
+                    el.style.opacity = '0.5';
+                });
+                el.addEventListener('dragend', () => {
+                    if (dragItem) dragItem.style.opacity = '1';
+                });
+                el.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const target = e.target.closest('.batch-item-list');
+                    if (target && target !== dragItem) {
+                        const container2 = target.parentElement;
+                        const rect = target.getBoundingClientRect();
+                        const mid = rect.top + rect.height / 2;
+                        if (e.clientY < mid) {
+                            container2.insertBefore(dragItem, target);
+                        } else {
+                            container2.insertBefore(dragItem, target.nextSibling);
+                        }
+                    }
+                });
+                el.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (dragItem) {
+                        const container2 = dragItem.parentElement;
+                        const items = container2.querySelectorAll('.batch-item-list');
+                        const instId = dragItem.dataset.inst;
+                        const batches = BATCHES[instId] || [];
+                        items.forEach((item, idx) => {
+                            const batchId = item.dataset.batch;
+                            const batch = batches.find(b => b.id === batchId);
+                            if (batch) batch.order = idx;
+                        });
+                        saveData();
+                        showToast('✅ Batch order updated!', 1500);
+                        dragItem.style.opacity = '1';
+                        dragItem = null;
+                        renderBatchOrderList();
+                    }
+                });
+            });
+        }
+
+        function exportData() {
+            const data = {
+                institutes: INSTITUTES,
+                batches: BATCHES,
+                content: COURSE_CONTENT,
+                students: STUDENTS,
+                notifications: NOTIFICATIONS,
+                exportedAt: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `eduverse_backup_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('📥 Data exported successfully!', 2000);
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const data = JSON.parse(ev.target.result);
+                        if (data.institutes) INSTITUTES = data.institutes;
+                        if (data.batches) BATCHES = data.batches;
+                        if (data.content) COURSE_CONTENT = data.content;
+                        if (data.students) STUDENTS = data.students;
+                        if (data.notifications) NOTIFICATIONS = data.notifications;
+                        saveData();
+                        renderInstitutes();
+                        populateInstituteSelects();
+                        showToast('📥 Data imported successfully!', 2000);
+                        location.reload();
+                    } catch (err) {
+                        showToast('❌ Invalid data file!', 2000);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function resetAllData() {
+            if (confirm('⚠️ This will delete ALL data! Are you sure?')) {
+                if (confirm('🔴 FINAL WARNING: This cannot be undone!')) {
+                    localStorage.clear();
+                    showToast('🗑️ All data reset!', 2000);
+                    location.reload();
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  INIT
+        // ═══════════════════════════════════════════════════════════════
+
+        loadData();
+        renderInstitutes();
+        populateInstituteSelects();
+        renderAllBatches();
+        populateContentBatchSelects();
+        renderNotificationHistory();
+        populateNotifTargetSelect();
+        refreshStudents();
+        renderBatchOrderList();
+
+        console.log('🛠️ EduVerse Admin Pro loaded!');
+        console.log('✅ Chapters, Lectures, PDFs - Edit & Delete both available!');
+        console.log('🗑️ Notifications: Delete option added');
+        console.log('📌 Removed: Revenue, Primary Color, Back to User, Icon field, Analytics tab');
+    </script>
+</body>
+</html>
