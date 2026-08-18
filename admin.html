@@ -76,7 +76,7 @@
         }
 
         .admin-header .brand i { color: var(--primary); }
-        .admin-header .brand span { color: var(--primary); }
+        .admin-header .brand .brand-text span { color: var(--primary); }
 
         .admin-header .header-actions {
             display: flex;
@@ -488,15 +488,6 @@
             background: rgba(248, 113, 113, 0.3);
         }
 
-        .batch-item-list .actions .btn-edit-item {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--warning);
-        }
-
-        .batch-item-list .actions .btn-edit-item:hover {
-            background: rgba(251, 191, 36, 0.3);
-        }
-
         /* ─── STATS CARDS ─── */
         .stats-grid {
             display: grid;
@@ -564,67 +555,6 @@
 
         .toast-modern i { margin-right: 8px; color: var(--primary); }
 
-        /* ─── EDIT MODAL ─── */
-        .edit-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .edit-modal.open { display: flex; }
-        .edit-modal .modal-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 28px 30px;
-            max-width: 480px;
-            width: 100%;
-            animation: slideUp 0.3s ease;
-        }
-        .edit-modal .modal-content h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-        .edit-modal .modal-content .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        .edit-modal .modal-content .modal-actions button {
-            flex: 1;
-            padding: 10px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-            border: none;
-        }
-        .edit-modal .modal-content .modal-actions .btn-save {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-        }
-        .edit-modal .modal-content .modal-actions .btn-save:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 20px var(--primary-glow);
-        }
-        .edit-modal .modal-content .modal-actions .btn-cancel-edit {
-            background: var(--glass-bg);
-            color: var(--text-secondary);
-            border: 1px solid var(--glass-border);
-        }
-        .edit-modal .modal-content .modal-actions .btn-cancel-edit:hover {
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
         /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
@@ -633,7 +563,6 @@
             .admin-tabs .tab { font-size: 0.65rem; padding: 8px 12px; }
             .admin-tabs .tab i { display: none; }
             .panel-card { padding: 16px 14px; }
-            .content-subtabs { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -650,7 +579,7 @@
         <!-- ─── HEADER ─── -->
         <header class="admin-header">
             <div class="brand">
-                <i class="fas fa-shield-alt"></i> Edu<span>Verse</span> Admin
+                <i class="fas fa-shield-alt"></i><span class="brand-text">Edu<span>Verse</span></span> Admin
             </div>
             <div class="header-actions">
                 <span class="badge"><i class="fas fa-database"></i> v2.0</span>
@@ -915,7 +844,11 @@
         </div>
 
         <!-- ════════════════════════════════════════════════════════════
-        TAB 6: NOTIFICATIONS
+        TAB 5: ANALYTICS (removed)
+        ════════════════════════════════════════════════════════════ -->
+
+        <!-- ════════════════════════════════════════════════════════════
+        TAB 6: NOTIFICATIONS (With Delete Option)
         ════════════════════════════════════════════════════════════ -->
         <div class="tab-content" id="tab-notifications">
             <div class="panel-card">
@@ -999,20 +932,6 @@
 
     </div>
 
-    <!-- ─── EDIT MODAL ─── -->
-    <div class="edit-modal" id="editModal">
-        <div class="modal-content">
-            <h3 id="editModalTitle">Edit Item</h3>
-            <form id="editForm">
-                <div id="editFields"></div>
-                <div class="modal-actions">
-                    <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
-                    <button type="button" class="btn-cancel-edit" onclick="closeEditModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- ─── TOAST ─── -->
     <div class="toast-modern" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Success!</span></div>
 
@@ -1084,15 +1003,6 @@
 
         let editingId = null;
 
-        // ─── Edit Modal State ───
-        let editContext = {
-            type: null, // 'chapter', 'lecture', 'pdf'
-            batchId: null,
-            chapterId: null,
-            itemId: null,
-            data: null
-        };
-
         // ═══════════════════════════════════════════════════════════════
         //  LOAD / SAVE
         // ═══════════════════════════════════════════════════════════════
@@ -1149,48 +1059,6 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  EDIT MODAL
-        // ═══════════════════════════════════════════════════════════════
-
-        function openEditModal(title, fields, onSave) {
-            const modal = document.getElementById('editModal');
-            document.getElementById('editModalTitle').textContent = title;
-            
-            let fieldsHtml = '';
-            for (const [key, field] of Object.entries(fields)) {
-                fieldsHtml += `
-                    <div class="form-group">
-                        <label>${field.label}</label>
-                        <input type="${field.type || 'text'}" id="edit_${key}" value="${field.value || ''}" placeholder="${field.placeholder || ''}" />
-                    </div>
-                `;
-            }
-            document.getElementById('editFields').innerHTML = fieldsHtml;
-            
-            document.getElementById('editForm').onsubmit = (e) => {
-                e.preventDefault();
-                const values = {};
-                for (const key of Object.keys(fields)) {
-                    values[key] = document.getElementById('edit_${key}').value.trim();
-                }
-                onSave(values);
-                closeEditModal();
-            };
-            
-            modal.classList.add('open');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('open');
-            document.getElementById('editForm').onsubmit = null;
-        }
-
-        // Click outside to close
-        document.getElementById('editModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('editModal')) closeEditModal();
-        });
-
-        // ═══════════════════════════════════════════════════════════════
         //  TAB SWITCHING
         // ═══════════════════════════════════════════════════════════════
 
@@ -1240,7 +1108,7 @@
             const name = document.getElementById('instName').value.trim();
             if (!name) { showToast('⚠️ Institute name is required!', 2000); return; }
 
-            const icon = '🏫';
+            const icon = '🏫'; // Fixed icon, removed emoji input
             const tag = document.getElementById('instTag').value.trim() || 'Institute';
             const subtitle = document.getElementById('instSubtitle').value.trim() || 'Learn with us';
             const desc = document.getElementById('instDesc').value.trim() || 'Quality education for all.';
@@ -1533,6 +1401,8 @@
         // ═══════════════════════════════════════════════════════════════
         //  3️⃣ COURSE CONTENT EDITOR (Chapters → Lectures / PDFs)
         // ═══════════════════════════════════════════════════════════════
+        // Data shape: COURSE_CONTENT[batchId] = { folders: [ { id, name, icon, lectures: [], pdfs: [] } ] }
+        // This is the exact shape the user-facing index.html reads (data.content.folders).
 
         function switchContentSubtab(tab) {
             document.querySelectorAll('.content-subtabs .csub').forEach(t => t.classList.remove('active'));
@@ -1619,27 +1489,6 @@
             showToast(`✅ Chapter "${name}" added!`, 1500);
         }
 
-        // ─── ✨ EDIT CHAPTER ───
-        function editChapter(batchId, chapterId) {
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            if (!folder) return;
-
-            openEditModal('Edit Chapter', {
-                name: { label: 'Chapter Name', value: folder.name, placeholder: 'e.g., Arithmetic' },
-                icon: { label: 'Emoji Icon', value: folder.icon || '📁', placeholder: '📁' },
-                iconUrl: { label: 'Icon URL (leave empty to use emoji)', value: folder.iconUrl || '', placeholder: 'https://example.com/icon.png' }
-            }, (values) => {
-                if (values.name) folder.name = values.name;
-                if (values.iconUrl) { folder.iconUrl = values.iconUrl; folder.icon = ''; }
-                else if (values.icon) { folder.icon = values.icon; folder.iconUrl = ''; }
-                saveData();
-                renderChapterList();
-                populateChapterSelect(document.getElementById('lectureBatch').value, 'lectureChapter');
-                populateChapterSelect(document.getElementById('pdfBatch').value, 'pdfChapter');
-                showToast('✅ Chapter updated!', 1500);
-            });
-        }
-
         function deleteChapter(batchId, chapterId) {
             if (!confirm('Delete this chapter and all its lectures/PDFs?')) return;
             const folders = COURSE_CONTENT[batchId]?.folders || [];
@@ -1680,7 +1529,6 @@
                         <div class="meta">${(f.lectures || []).length} lectures · ${(f.pdfs || []).length} PDFs</div>
                     </div>
                     <div class="actions">
-                        <button onclick="editChapter('${batchId}','${f.id}')" class="btn-edit-item"><i class="fas fa-pen"></i> Edit</button>
                         <button onclick="deleteChapter('${batchId}','${f.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>
@@ -1714,26 +1562,6 @@
             renderLectureList();
             renderChapterList();
             showToast(`✅ Lecture "${name}" added!`, 1500);
-        }
-
-        // ─── ✨ EDIT LECTURE ───
-        function editLecture(batchId, chapterId, lectureId) {
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            if (!folder) return;
-            const lecture = (folder.lectures || []).find(l => l.id === lectureId);
-            if (!lecture) return;
-
-            openEditModal('Edit Lecture', {
-                name: { label: 'Lecture Name', value: lecture.name, placeholder: 'e.g., Introduction' },
-                url: { label: 'Video URL', value: lecture.url || '', placeholder: 'https://youtube.com/...' }
-            }, (values) => {
-                if (values.name) lecture.name = values.name;
-                lecture.url = values.url || '';
-                saveData();
-                renderLectureList();
-                renderChapterList();
-                showToast('✅ Lecture updated!', 1500);
-            });
         }
 
         function deleteLecture(batchId, chapterId, lectureId) {
@@ -1775,7 +1603,6 @@
                         <div class="meta">${l.url || 'No URL set'}</div>
                     </div>
                     <div class="actions">
-                        <button onclick="editLecture('${batchId}','${chapterId}','${l.id}')" class="btn-edit-item"><i class="fas fa-pen"></i> Edit</button>
                         <button onclick="deleteLecture('${batchId}','${chapterId}','${l.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>
@@ -1809,26 +1636,6 @@
             renderPdfList();
             renderChapterList();
             showToast(`✅ PDF "${name}" added!`, 1500);
-        }
-
-        // ─── ✨ EDIT PDF ───
-        function editPdf(batchId, chapterId, pdfId) {
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            if (!folder) return;
-            const pdf = (folder.pdfs || []).find(p => p.id === pdfId);
-            if (!pdf) return;
-
-            openEditModal('Edit PDF', {
-                name: { label: 'PDF Name', value: pdf.name, placeholder: 'Handwritten Notes' },
-                url: { label: 'PDF URL', value: pdf.url || '', placeholder: 'https://example.com/notes.pdf' }
-            }, (values) => {
-                if (values.name) pdf.name = values.name;
-                pdf.url = values.url || '';
-                saveData();
-                renderPdfList();
-                renderChapterList();
-                showToast('✅ PDF updated!', 1500);
-            });
         }
 
         function deletePdf(batchId, chapterId, pdfId) {
@@ -1870,7 +1677,6 @@
                         <div class="meta">${p.url || 'No URL set'}</div>
                     </div>
                     <div class="actions">
-                        <button onclick="editPdf('${batchId}','${chapterId}','${p.id}')" class="btn-edit-item"><i class="fas fa-pen"></i> Edit</button>
                         <button onclick="deletePdf('${batchId}','${chapterId}','${p.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>
@@ -1892,6 +1698,7 @@
             const students = getRealStudents();
             const totalEnrollments = students.reduce((sum, s) => sum + (Array.isArray(s.enrollments) ? s.enrollments.length : 0), 0);
 
+            // Find the most-enrolled batch name across all students
             const batchCounts = {};
             students.forEach(s => (s.enrollments || []).forEach(en => {
                 batchCounts[en.batchName] = (batchCounts[en.batchName] || 0) + 1;
@@ -1935,6 +1742,7 @@
             }).join('');
         }
 
+        // ─── Send a personal message to one specific student ───
         function openMessageStudent(studentId) {
             const students = getRealStudents();
             const student = students.find(s => s.id === studentId);
@@ -1952,7 +1760,7 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  6️⃣ NOTIFICATIONS
+        //  6️⃣ NOTIFICATIONS (With Delete Option)
         // ═══════════════════════════════════════════════════════════════
 
         function populateNotifTargetSelect() {
@@ -2078,6 +1886,7 @@
             }
             container.innerHTML = html || '<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">No batches to reorder</div>';
 
+            // Drag and Drop
             let dragItem = null;
             container.querySelectorAll('[draggable="true"]').forEach(el => {
                 el.addEventListener('dragstart', (e) => {
@@ -2123,6 +1932,7 @@
             });
         }
 
+        // ─── Data Export/Import ──────────────────────────────────
         function exportData() {
             const data = {
                 institutes: INSTITUTES,
@@ -2197,7 +2007,6 @@
         renderBatchOrderList();
 
         console.log('🛠️ EduVerse Admin Pro loaded!');
-        console.log('✅ Chapters, Lectures, PDFs - Edit & Delete both available!');
         console.log('🗑️ Notifications: Delete option added');
         console.log('📌 Removed: Revenue, Primary Color, Back to User, Icon field, Analytics tab');
     </script>

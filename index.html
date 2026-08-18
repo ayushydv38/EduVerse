@@ -219,7 +219,7 @@
             color: var(--primary);
             font-size: 1.6rem;
         }
-        .glass-header .brand span {
+        .glass-header .brand .brand-text span {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -1242,7 +1242,7 @@
         .player-top .player-brand i {
             color: var(--primary);
         }
-        .player-top .player-brand span {
+        .player-top .player-brand .brand-text span {
             color: var(--primary);
         }
 
@@ -1807,7 +1807,7 @@
         <!-- HEADER -->
         <header class="glass-header">
             <div class="brand" id="brandHome">
-                <i class="fas fa-graduation-cap"></i> Edu<span>Verse</span>
+                <i class="fas fa-graduation-cap"></i><span class="brand-text">Edu<span>Verse</span></span>
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
                 <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back</button>
@@ -1936,7 +1936,7 @@
     <div class="player-view" id="playerView">
         <div class="player-top">
             <button class="back-btn-player" onclick="closePlayer()"><i class="fas fa-arrow-left"></i> Back</button>
-            <div class="player-brand"><i class="fas fa-graduation-cap"></i> Edu<span>Verse</span></div>
+            <div class="player-brand"><i class="fas fa-graduation-cap"></i><span class="brand-text">Edu<span>Verse</span></span></div>
         </div>
         <div class="v-yt-wrap" id="v-yt-wrap">
             <iframe id="v-yt-iframe" allowfullscreen allow="autoplay; encrypted-media; fullscreen" src=""></iframe>
@@ -1986,7 +1986,7 @@
     <div class="pdf-viewer-view" id="pdfViewer">
         <div class="player-top">
             <button class="back-btn-player" onclick="closePdfViewer()"><i class="fas fa-arrow-left"></i> Back</button>
-            <div class="player-brand"><i class="fas fa-graduation-cap"></i> Edu<span>Verse</span> PDF</div>
+            <div class="player-brand"><i class="fas fa-graduation-cap"></i><span class="brand-text">Edu<span>Verse</span></span> PDF</div>
         </div>
         <div class="pdf-container">
             <div id="pdfPlaceholder" class="pdf-placeholder">
@@ -2099,10 +2099,12 @@
             if (!url) return null;
             const patterns = [
                 /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+                /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/,
                 /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
                 /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
                 /youtu\.be\/([a-zA-Z0-9_-]{11})/,
                 /m\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+                /m\.youtube\.com\/live\/([a-zA-Z0-9_-]{11})/,
                 /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/
             ];
             for (let pattern of patterns) {
