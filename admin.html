@@ -1,2014 +1,1464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduVerse · Admin Panel Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <style>
-        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-           RESET & VARIABLES
-           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg-primary: #0a0e1a;
-            --bg-secondary: #111827;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --primary: #8b5cf6;
-            --primary-dark: #7c3aed;
-            --primary-light: #a78bfa;
-            --primary-glow: rgba(139, 92, 246, 0.25);
-            --success: #34d399;
-            --warning: #fbbf24;
-            --danger: #f87171;
-            --text: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-dim: #64748b;
-            --border: rgba(255, 255, 255, 0.06);
-            --radius: 16px;
-            --radius-sm: 10px;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 20px 24px 40px;
-            background-image: radial-gradient(ellipse at 10% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-
-        .admin-container { max-width: 1200px; margin: 0 auto; }
-
-        /* ─── HEADER ─── */
-        .admin-header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .admin-header .brand {
-            font-size: 1.5rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .admin-header .brand i { color: var(--primary); }
-        .admin-header .brand .brand-text span { color: var(--primary); }
-
-        .admin-header .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .admin-header .header-actions .badge {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .admin-header .header-actions .badge i { color: var(--primary); }
-
-        /* ─── TABS ─── */
-        .admin-tabs {
-            display: flex;
-            gap: 4px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius-sm);
-            padding: 4px;
-            border: 1px solid var(--glass-border);
-            margin-bottom: 24px;
-            overflow-x: auto;
-            flex-wrap: nowrap;
-        }
-
-        .admin-tabs .tab {
-            padding: 10px 18px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.75rem;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .admin-tabs .tab:hover { color: var(--text); }
-
-        .admin-tabs .tab.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            box-shadow: 0 4px 20px var(--primary-glow);
-        }
-
-        .admin-tabs .tab i { font-size: 0.8rem; }
-
-        .tab-content {
-            display: none;
-            animation: slideUp 0.4s ease;
-        }
-
-        .tab-content.active { display: block; }
-
-        /* ─── CONTENT SUB-TABS (Chapters / Lectures / PDFs) ─── */
-        .content-subtabs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .content-subtabs .csub {
-            padding: 14px 18px;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            color: var(--text-secondary);
-            font-weight: 700;
-            font-size: 0.9rem;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .content-subtabs .csub:hover { color: var(--text); border-color: var(--success); }
-
-        .content-subtabs .csub.active {
-            background: var(--success);
-            border-color: var(--success);
-            color: #04120c;
-            box-shadow: 0 4px 20px rgba(52, 211, 153, 0.25);
-        }
-
-        .content-subtab-content { display: none; animation: slideUp 0.4s ease; }
-        .content-subtab-content.active { display: block; }
-
-        .icon-type-toggle {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .icon-type-btn {
-            padding: 9px 10px;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: var(--transition);
-        }
-        .icon-type-btn.active {
-            background: var(--success);
-            border-color: var(--success);
-            color: #04120c;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ─── PANEL STYLES ─── */
-        .panel-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 24px 28px;
-            margin-bottom: 20px;
-        }
-
-        .panel-card h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .panel-card h3 i { color: var(--primary); }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 10px 14px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            color: var(--text);
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
-            transition: var(--transition);
-            outline: none;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            border: none;
-            padding: 10px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-submit:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 20px var(--primary-glow);
-        }
-
-        .btn-danger {
-            background: rgba(248, 113, 113, 0.15);
-            border: 1px solid rgba(248, 113, 113, 0.2);
-            color: var(--danger);
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-danger:hover { background: rgba(248, 113, 113, 0.3); }
-
-        .btn-success {
-            background: rgba(52, 211, 153, 0.15);
-            border: 1px solid rgba(52, 211, 153, 0.2);
-            color: var(--success);
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-success:hover { background: rgba(52, 211, 153, 0.3); }
-
-        .btn-warning {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            color: var(--warning);
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-warning:hover { background: rgba(251, 191, 36, 0.3); }
-
-        .logo-preview {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 8px;
-        }
-
-        .logo-preview img {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: var(--bg-secondary);
-            border: 1px solid var(--glass-border);
-        }
-
-        .logo-preview span {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
-
-        /* ─── GRID LISTS ─── */
-        .grid-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-        }
-
-        .list-item {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 18px 20px;
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .list-item:hover { border-color: var(--primary); }
-
-        .list-item .item-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .list-item .item-top .icon-big { font-size: 2rem; }
-
-        .list-item .item-top .badge-status {
-            font-size: 0.6rem;
-            font-weight: 700;
-            padding: 2px 12px;
-            border-radius: 40px;
-        }
-
-        .list-item .item-top .badge-status.active {
-            background: rgba(52, 211, 153, 0.15);
-            color: var(--success);
-        }
-
-        .list-item .item-top .badge-status.inactive {
-            background: rgba(248, 113, 113, 0.15);
-            color: var(--danger);
-        }
-
-        .list-item h4 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-top: 6px;
-        }
-
-        .list-item .sub {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .list-item .item-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .list-item .item-actions button {
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* ─── BATCH ITEM ─── */
-        .batch-item-list {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .batch-item-list .info .name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .batch-item-list .info .meta {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .batch-item-list .actions {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .batch-item-list .actions button {
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .batch-item-list .actions .btn-delete-notif {
-            background: rgba(248, 113, 113, 0.15);
-            color: var(--danger);
-        }
-
-        .batch-item-list .actions .btn-delete-notif:hover {
-            background: rgba(248, 113, 113, 0.3);
-        }
-
-        /* ─── STATS CARDS ─── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 18px 20px;
-            text-align: center;
-        }
-
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary-light);
-        }
-
-        .stat-card .label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
-        /* ─── DRAG HANDLE ─── */
-        .drag-handle {
-            cursor: grab;
-            color: var(--text-dim);
-            font-size: 0.8rem;
-        }
-
-        .drag-handle:active { cursor: grabbing; }
-
-        /* ─── TOAST ─── */
-        .toast-modern {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            padding: 16px 32px;
-            border-radius: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            font-weight: 500;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.5s ease;
-            z-index: 999;
-            font-size: 0.9rem;
-        }
-
-        .toast-modern.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-
-        .toast-modern i { margin-right: 8px; color: var(--primary); }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .grid-list { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .admin-tabs .tab { font-size: 0.65rem; padding: 8px 12px; }
-            .admin-tabs .tab i { display: none; }
-            .panel-card { padding: 16px 14px; }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .admin-header .brand { font-size: 1.1rem; }
-            .admin-header .header-actions .badge { font-size: 0.6rem; padding: 4px 10px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SX Pay Admin</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+    --p: #7C5CFF;
+    --p2: #C471F5;
+    --p3: #FF6584;
+    --grad: linear-gradient(135deg,#7C5CFF,#C471F5,#FF6584);
+    --grad2: linear-gradient(135deg,#06D6A0,#0099FF);
+    --bg: #08090F;
+    --bg2: #0F1120;
+    --bg3: #161829;
+    --bg4: #1E2038;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #F0F2FF;
+    --text2: #8B90B8;
+    --muted: #3D4168;
+    --success: #06D6A0;
+    --danger: #FF6584;
+    --warn: #FFD166;
+    --info: #0099FF;
+    --sidebar-w: 260px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+
+/* BG GRID */
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(124,92,255,0.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+
+/* ─── SPLASH ─── */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease}
+#splash.out{opacity:0;pointer-events:none}
+.splash-ring{width:110px;height:110px;border-radius:32px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:48px;color:white;margin-bottom:24px;box-shadow:0 0 60px rgba(124,92,255,.5);animation:splashPop .7s cubic-bezier(.34,1.56,.64,1) both}
+.splash-ring img{width:72px;height:72px;object-fit:contain;display:none}
+@keyframes splashPop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+.splash-name{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}
+.splash-sub{font-size:14px;color:var(--text2);margin-bottom:32px}
+.splash-bar{width:180px;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.splash-prog{height:100%;background:var(--grad);border-radius:2px;animation:prog 1.8s ease forwards}
+@keyframes prog{0%{width:0%}100%{width:100%}}
+
+/* ─── AUTH ─── */
+#authWrap{position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px}
+#authWrap.show{display:flex}
+.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:28px;padding:36px 32px;width:100%;max-width:420px;animation:slideUp .4s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.auth-logo{display:flex;flex-direction:column;align-items:center;margin-bottom:28px}
+.auth-logo-icon{width:72px;height:72px;border-radius:22px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:32px;color:white;margin-bottom:14px;box-shadow:0 0 40px rgba(124,92,255,.4)}
+.auth-logo h2{font-size:24px;font-weight:800;margin-bottom:4px}
+.auth-logo p{font-size:13px;color:var(--text2)}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:14px;padding:4px;gap:4px;margin-bottom:24px}
+.auth-tab{flex:1;padding:11px;border-radius:10px;border:none;background:transparent;color:var(--text2);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.auth-tab.active{background:var(--p);color:white;box-shadow:0 4px 14px rgba(124,92,255,.4)}
+.inp-wrap{margin-bottom:14px}
+.inp-wrap label{display:block;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.inp-wrap input{width:100%;padding:13px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.inp-wrap input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(124,92,255,.15)}
+.inp-wrap input::placeholder{color:var(--muted)}
+.auth-btn{width:100%;padding:14px;border:none;border-radius:14px;background:var(--grad);color:white;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;font-family:'DM Sans',sans-serif}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,92,255,.4)}
+.auth-btn:active{transform:scale(.98)}
+.auth-err{color:var(--danger);font-size:13px;margin-top:10px;text-align:center;min-height:18px}
+
+/* ─── APP SHELL ─── */
+#app{display:none;min-height:100vh}
+#app.show{display:flex}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;z-index:500;display:flex;flex-direction:column;transition:transform .3s ease}
+.sidebar.hidden{transform:translateX(-100%)}
+.sb-head{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sb-logo{display:flex;align-items:center;gap:12px}
+.sb-logo-icon{width:44px;height:44px;border-radius:14px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:20px;color:white;flex-shrink:0}
+.sb-logo-icon img{width:30px;height:30px;object-fit:contain;display:none}
+.sb-logo-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.sb-logo-sub{font-size:11px;color:var(--text2)}
+.sb-admin{display:flex;align-items:center;gap:10px;margin-top:14px;background:var(--bg3);border-radius:12px;padding:10px 12px}
+.sb-admin-av{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:white;flex-shrink:0}
+.sb-admin-name{font-size:13px;font-weight:700;color:var(--text)}
+.sb-admin-role{font-size:11px;color:var(--text2)}
+.sb-menu{flex:1;overflow-y:auto;padding:16px 12px}
+.sb-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;cursor:pointer;color:var(--text2);font-size:14px;font-weight:600;margin-bottom:4px;transition:all .2s;border:1px solid transparent}
+.sb-item:hover{background:rgba(124,92,255,.08);color:var(--text);border-color:rgba(124,92,255,.15)}
+.sb-item.active{background:rgba(124,92,255,.15);color:var(--p);border-color:rgba(124,92,255,.25)}
+.sb-item i{width:20px;text-align:center;font-size:16px}
+.sb-item .badge{margin-left:auto;background:var(--p);color:white;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px}
+.sb-sep{height:1px;background:var(--border);margin:10px 0}
+.sb-foot{padding:16px 12px 20px}
+
+/* ─── MAIN ─── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left .3s ease}
+.main.full{margin-left:0}
+
+/* ─── TOPBAR ─── */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.topbar-toggle{width:40px;height:40px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.topbar-toggle:hover{background:var(--p);color:white;border-color:var(--p)}
+.topbar-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;flex:1}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-btn{width:38px;height:38px;border-radius:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative}
+.topbar-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.topbar-notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid var(--bg2)}
+
+/* ─── PAGE ─── */
+.page{display:none;padding:28px 24px;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-header{margin-bottom:24px}
+.page-header h1{font-size:26px;font-weight:800;margin-bottom:4px}
+.page-header p{font-size:14px;color:var(--text2)}
+
+/* ─── CARDS ─── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:22px}
+.card-title{font-size:14px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px}
+
+/* ─── STATS GRID ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:20px;transition:all .2s;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:.06}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:white;margin-bottom:14px}
+.stat-num{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:13px;color:var(--text2)}
+.stat-trend{font-size:11px;font-weight:700;margin-top:6px}
+.trend-up{color:var(--success)}
+.trend-dn{color:var(--danger)}
+
+/* ─── TABLE ─── */
+.search-row{display:flex;gap:10px;margin-bottom:16px}
+.search-inp{flex:1;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.search-inp:focus{border-color:var(--p)}
+.search-inp::placeholder{color:var(--muted)}
+.filter-btn{padding:11px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:6px}
+.filter-btn:hover{border-color:var(--p);color:var(--p)}
+
+/* ─── USER GRID ─── */
+.users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.user-card{background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;transition:all .2s;cursor:pointer}
+.user-card:hover{border-color:var(--p);transform:translateY(-2px)}
+.user-card-top{display:flex;align-items:center;gap:12px}
+.user-av{width:48px;height:48px;border-radius:14px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;flex-shrink:0;overflow:hidden}
+.user-av img{width:100%;height:100%;object-fit:cover}
+.user-card-name{font-size:15px;font-weight:700}
+.user-card-phone{font-size:12px;color:var(--text2);margin-top:2px}
+.user-card-stats{display:flex;gap:8px}
+.user-stat-chip{flex:1;background:var(--bg4);border-radius:10px;padding:8px 10px;text-align:center}
+.user-stat-chip .v{font-size:14px;font-weight:800}
+.user-stat-chip .l{font-size:10px;color:var(--text2);margin-top:1px}
+.user-view-btn{width:100%;padding:10px;border:none;border-radius:12px;background:rgba(124,92,255,.12);color:var(--p);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.user-view-btn:hover{background:var(--p);color:white}
+
+/* ─── MODAL ─── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:28px;width:100%;max-width:520px;margin:auto;animation:slideUp .3s ease}
+.modal-head{padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:18px;font-weight:800}
+.modal-close{width:34px;height:34px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:var(--danger);color:white;border-color:var(--danger)}
+.modal-body{padding:20px 24px 28px;display:flex;flex-direction:column;gap:14px}
+
+/* User detail modal */
+.user-profile-hero{display:flex;align-items:center;gap:16px;background:var(--bg3);border-radius:16px;padding:16px}
+.user-profile-av{width:72px;height:72px;border-radius:20px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:white;overflow:hidden;flex-shrink:0}
+.user-profile-av img{width:100%;height:100%;object-fit:cover}
+.user-profile-name{font-size:20px;font-weight:800}
+.user-profile-upi{font-size:13px;color:var(--text2);font-family:monospace;margin-top:2px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-field label{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.detail-field input,.detail-field select{width:100%;padding:11px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.detail-field input:focus,.detail-field select:focus{border-color:var(--p)}
+.detail-field input[readonly]{opacity:.5;cursor:default}
+.detail-field.full{grid-column:span 2}
+.modal-actions{display:flex;gap:10px;margin-top:4px}
+.btn-save{flex:1;padding:13px;border:none;border-radius:13px;background:var(--grad);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,255,.4)}
+.btn-del-user{padding:13px 18px;border:none;border-radius:13px;background:rgba(255,101,132,.12);color:var(--danger);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;border:1px solid rgba(255,101,132,.2)}
+.btn-del-user:hover{background:var(--danger);color:white}
+.btn-cancel{padding:13px 18px;border:1px solid var(--border);border-radius:13px;background:transparent;color:var(--text2);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ─── FORM ELEMENTS ─── */
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group textarea,.form-group select{padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(124,92,255,.12)}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted)}
+.form-group textarea{resize:none;height:90px}
+.img-prev-box{width:100%;aspect-ratio:16/9;background:var(--bg3);border:2px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.img-prev-box img{width:100%;height:100%;object-fit:cover;display:none}
+.img-prev-box .ph{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted)}
+.img-prev-box.loaded{border-color:var(--success)}
+.img-prev-box.loaded img{display:block}
+.img-prev-box.loaded .ph{display:none}
+
+/* ─── ACTION BTNS ─── */
+.act-btn{padding:9px 14px;border-radius:10px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.act-btn:active{transform:scale(.94)}
+.btn-edit{background:rgba(0,153,255,.15);color:var(--info)}
+.btn-edit:hover{background:var(--info);color:white}
+.btn-delete{background:rgba(255,101,132,.12);color:var(--danger)}
+.btn-delete:hover{background:var(--danger);color:white}
+.btn-toggle-vis{background:rgba(6,214,160,.12);color:var(--success)}
+.btn-toggle-vis:hover{background:var(--success);color:white}
+.btn-toggle-vis.off{background:rgba(255,209,102,.12);color:var(--warn)}
+.btn-primary{background:var(--grad);color:white;padding:13px 20px;border:none;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,255,.4)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ─── EXPLORE LIST ─── */
+.explore-list{display:flex;flex-direction:column;gap:12px}
+.explore-row{background:var(--bg3);border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;gap:14px;padding:14px;transition:border-color .2s}
+.explore-row:hover{border-color:var(--p)}
+.explore-thumb{width:90px;height:56px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--bg4);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.explore-thumb img{width:100%;height:100%;object-fit:cover}
+.explore-info{flex:1;min-width:0}
+.explore-title{font-size:14px;font-weight:700;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.explore-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(124,92,255,.15);color:var(--p);display:inline-block}
+.explore-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ─── BANNER GRID ─── */
+.banner-grid{display:flex;flex-direction:column;gap:12px}
+.banner-row{background:var(--bg3);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .2s}
+.banner-row:hover{border-color:var(--p)}
+.banner-thumb{width:100%;aspect-ratio:16/9;max-height:200px;background:var(--bg4);position:relative;overflow:hidden}
+.banner-thumb img{width:100%;height:100%;object-fit:cover}
+.banner-thumb .no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:28px}
+.banner-num{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);color:white;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px}
+.banner-hidden-badge{position:absolute;top:8px;right:8px;background:rgba(255,166,0,.9);color:#000;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px}
+.banner-body{padding:14px;display:flex;align-items:center;gap:12px}
+.banner-info{flex:1;min-width:0}
+.banner-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.banner-link{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.banner-actions{display:flex;gap:6px}
+
+/* ─── NOTIF ─── */
+.notif-type-row{display:flex;gap:10px;margin-bottom:4px}
+.notif-type-btn{flex:1;padding:11px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.notif-type-btn.active{background:rgba(124,92,255,.15);color:var(--p);border-color:rgba(124,92,255,.3)}
+
+/* ─── SETTINGS ─── */
+.setting-row{display:flex;align-items:center;gap:16px;background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:16px}
+.setting-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.setting-info{flex:1}
+.setting-info h4{font-size:14px;font-weight:700;margin-bottom:2px}
+.setting-info p{font-size:12px;color:var(--text2)}
+.setting-input{width:180px;padding:9px 12px;background:var(--bg4);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none}
+.setting-input:focus{border-color:var(--p)}
+.setting-save-btn{padding:9px 16px;border:none;border-radius:10px;background:var(--p);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.setting-save-btn:hover{box-shadow:0 4px 14px rgba(124,92,255,.4)}
+
+/* ─── PIE CHART ─── */
+.chart-wrap{position:relative;width:100%;max-width:240px;margin:0 auto}
+
+/* ─── TOAST ─── */
+#toastWrap{position:fixed;top:20px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:13px 18px;font-size:14px;font-weight:600;min-width:240px;animation:slideIn .3s ease;display:flex;align-items:center;gap:10px}
+@keyframes slideIn{from{transform:translateX(80px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{border-color:rgba(6,214,160,.3);color:var(--success)}
+.toast.error{border-color:rgba(255,101,132,.3);color:var(--danger)}
+.toast.warn{border-color:rgba(255,209,102,.3);color:var(--warn)}
+
+/* ─── EMPTY ─── */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state i{font-size:52px;opacity:.3;display:block;margin-bottom:14px}
+.empty-state h3{font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px}
+
+/* ─── ADD PANEL MOBILE ─── */
+.add-panel-mobile{display:block}
+@media(max-width:768px){
+  .add-panel-mobile{display:none}
+  .add-panel-mobile.open{display:block}
+}
+/* ─── SPINNER ─── */
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spinA .6s linear infinite;flex-shrink:0}
+@keyframes spinA{to{transform:rotate(360deg)}}
+
+/* ─── TRANSACTIONS LIST ─── */
+.txn-row{display:flex;align-items:center;gap:12px;padding:13px;background:var(--bg3);border-radius:14px;margin-bottom:8px}
+.txn-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.txn-icon.debit{background:rgba(255,101,132,.12);color:var(--danger)}
+.txn-icon.credit{background:rgba(6,214,160,.12);color:var(--success)}
+.txn-info{flex:1}
+.txn-peer{font-size:13px;font-weight:700}
+.txn-date{font-size:11px;color:var(--text2);margin-top:1px}
+.txn-utr{font-size:10px;color:var(--muted);font-family:monospace}
+.txn-amount.debit{color:var(--danger);font-weight:800}
+.txn-amount.credit{color:var(--success);font-weight:800}
+
+/* ─── OVERLAY ─── */
+#sbOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400}
+#sbOverlay.show{display:block}
+
+/* Manager 2-col grid */
+.mgr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* Dashboard charts row */
+.dash-charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.visible{transform:translateX(0)}
+  .main{margin-left:0!important}
+  .users-grid{grid-template-columns:1fr!important}
+  .detail-grid{grid-template-columns:1fr!important}
+  .detail-field.full{grid-column:span 1!important}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .mgr-grid{grid-template-columns:1fr!important}
+  .dash-charts-row{grid-template-columns:1fr!important}
+  .page{padding:16px 12px}
+  .topbar{padding:12px 14px}
+  .page-header h1{font-size:20px}
+  .modal{width:95%;margin:10px auto}
+  .modal-actions{flex-wrap:wrap}
+  .modal-actions .btn-save{order:1}
+  .modal-actions .btn-cancel{order:3}
+  .modal-actions .btn-del-user{order:2}
+  .setting-row{flex-wrap:wrap;gap:10px}
+  .setting-input{width:100%}
+  .setting-save-btn{width:100%}
+  .topbar-title{font-size:14px}
+  .sb-head{padding:16px 14px 14px}
+}
+</style>
 </head>
 <body>
 
-    <div class="admin-container">
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-ring">
+    <img id="splashIconImg" alt="">
+    <i class="fa fa-crown" id="splashIconFallback"></i>
+  </div>
+  <div class="splash-name">SX Pay Admin</div>
+  <div class="splash-sub">Control Panel</div>
+  <div class="splash-bar"><div class="splash-prog"></div></div>
+</div>
 
-        <!-- ─── HEADER ─── -->
-        <header class="admin-header">
-            <div class="brand">
-                <i class="fas fa-shield-alt"></i><span class="brand-text">Edu<span>Verse</span></span> Admin
-            </div>
-            <div class="header-actions">
-                <span class="badge"><i class="fas fa-database"></i> v2.0</span>
-            </div>
-        </header>
+<!-- AUTH -->
+<div id="authWrap">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon"><i class="fa fa-crown"></i></div>
+      <h2>Admin Panel</h2>
+      <p>SX Pay · Authorized access only</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">New Admin</button>
+    </div>
+    <!-- Login -->
+    <div id="loginForm">
+      <div class="inp-wrap"><label>Username</label><input id="loginUser" placeholder="admin username" autocomplete="off"></div>
+      <div class="inp-wrap"><label>Password</label><input id="loginPass" type="password" placeholder="password"></div>
+      <button class="auth-btn" onclick="doLogin()"><i class="fa fa-arrow-right-to-bracket"></i> Login</button>
+    </div>
+    <!-- Register -->
+    <div id="registerForm" style="display:none">
+      <div class="inp-wrap"><label>Username</label><input id="regUser" placeholder="choose username" autocomplete="off"></div>
+      <div class="inp-wrap"><label>Password</label><input id="regPass" type="password" placeholder="choose password"></div>
+      <div class="inp-wrap"><label>Confirm Password</label><input id="regPass2" type="password" placeholder="repeat password"></div>
+      <div class="inp-wrap"><label>Master Key</label><input id="regKey" type="password" placeholder="required to create admin"></div>
+      <button class="auth-btn" onclick="doRegister()"><i class="fa fa-user-plus"></i> Create Admin</button>
+    </div>
+    <div class="auth-err" id="authErr"></div>
+  </div>
+</div>
 
-        <!-- ─── TABS ─── -->
-        <div class="admin-tabs">
-            <button class="tab active" data-tab="institutes"><i class="fas fa-building"></i> Institutes</button>
-            <button class="tab" data-tab="batches"><i class="fas fa-cubes"></i> Batches</button>
-            <button class="tab" data-tab="content"><i class="fas fa-book"></i> Course Content</button>
-            <button class="tab" data-tab="students"><i class="fas fa-user-graduate"></i> Students</button>
-            <button class="tab" data-tab="notifications"><i class="fas fa-bell"></i> Notifications</button>
-            <button class="tab" data-tab="settings"><i class="fas fa-cog"></i> Settings</button>
+<!-- APP -->
+<div id="app">
+  <!-- Sidebar overlay -->
+  <div id="sbOverlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">
+        <div class="sb-logo-icon">
+          <img id="sbIconImg" alt="">
+          <i class="fa fa-crown" id="sbIconFallback"></i>
         </div>
-
-        <!-- ════════════════════════════════════════════════════════════
-        TAB 1: INSTITUTES
-        ════════════════════════════════════════════════════════════ -->
-        <div class="tab-content active" id="tab-institutes">
-            <div class="panel-card">
-                <h3><i class="fas fa-plus-circle"></i> <span id="formTitle">Add New Institute</span></h3>
-                <form id="instituteForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Institute Name *</label>
-                            <input type="text" id="instName" placeholder="e.g. Next Toppers" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Tag / Category</label>
-                            <input type="text" id="instTag" placeholder="e.g. CBSE 9-12" />
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Subtitle</label>
-                            <input type="text" id="instSubtitle" placeholder="e.g. UPSC · STATE PCS · SSC" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="instDesc" placeholder="Brief description of the institute..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Upload Logo (Image)</label>
-                        <input type="file" id="instLogo" accept="image/*" />
-                        <div class="logo-preview" id="logoPreview">
-                            <span>No logo uploaded</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Institute Status</label>
-                        <select id="instStatus">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> <span id="submitBtnText">Add Institute</span></button>
-                </form>
-            </div>
-
-            <div class="panel-card">
-                <h3><i class="fas fa-list"></i> All Institutes <span style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;" id="instCount">(0)</span></h3>
-                <div class="grid-list" id="instituteGrid"></div>
-            </div>
+        <div>
+          <div class="sb-logo-name">SX Pay</div>
+          <div class="sb-logo-sub">Admin Panel</div>
         </div>
-
-        <!-- ════════════════════════════════════════════════════════════
-        TAB 2: BATCHES
-        ════════════════════════════════════════════════════════════ -->
-        <div class="tab-content" id="tab-batches">
-            <div class="panel-card">
-                <h3><i class="fas fa-plus-circle"></i> Add New Batch</h3>
-                <form id="batchForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Select Institute *</label>
-                            <select id="batchInstitute" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Batch Name *</label>
-                            <input type="text" id="batchName" placeholder="e.g. Class 12th" required />
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Meta / Tagline</label>
-                            <input type="text" id="batchMeta" placeholder="e.g. CBSE · Science & Commerce" />
-                        </div>
-                        <div class="form-group">
-                            <label>Batch Type</label>
-                            <select id="batchType">
-                                <option value="free">Free</option>
-                                <option value="paid">Paid</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row" id="priceFields">
-                        <div class="form-group">
-                            <label>Original Price (₹)</label>
-                            <input type="number" id="batchOriginalPrice" placeholder="1499" />
-                        </div>
-                        <div class="form-group">
-                            <label>Discounted Price (₹)</label>
-                            <input type="number" id="batchDiscountedPrice" placeholder="999" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Batch Image URL</label>
-                        <input type="text" id="batchImage" placeholder="https://example.com/batch-image.jpg" />
-                    </div>
-                    <div class="form-group">
-                        <label>Batch Overview (HTML supported)</label>
-                        <textarea id="batchOverview" rows="4" placeholder="<h3>Course Title</h3><p>Description...</p>"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Batch Status</label>
-                        <select id="batchStatus">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Add Batch</button>
-                </form>
-            </div>
-
-            <div class="panel-card">
-                <h3><i class="fas fa-cubes"></i> All Batches <span style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;" id="batchCount">(0)</span></h3>
-                <div id="allBatchesList"></div>
-            </div>
+      </div>
+      <div class="sb-admin" style="margin-top:14px">
+        <div class="sb-admin-av" id="sbAdminAv">A</div>
+        <div>
+          <div class="sb-admin-name" id="sbAdminName">Admin</div>
+          <div class="sb-admin-role">Super Admin</div>
         </div>
+      </div>
+    </div>
+    <div class="sb-menu">
+      <div class="sb-item active" onclick="navTo('dashboard')"><i class="fa fa-chart-pie"></i><span>Dashboard</span></div>
+      <div class="sb-item" onclick="navTo('users')"><i class="fa fa-users"></i><span>User Manager</span><span class="badge" id="userBadge">0</span></div>
+      <div class="sb-sep"></div>
+      <div class="sb-item" onclick="navTo('explore')"><i class="fa fa-compass"></i><span>Explore Manager</span></div>
+      <div class="sb-item" onclick="navTo('banner')"><i class="fa fa-images"></i><span>Banner Manager</span></div>
+      <div class="sb-sep"></div>
+      <div class="sb-item" onclick="navTo('notif')"><i class="fa fa-bell"></i><span>Notifications</span></div>
+      <div class="sb-item" onclick="navTo('settings')"><i class="fa fa-gear"></i><span>Settings</span></div>
+    </div>
+    <div class="sb-foot">
+      <div class="sb-item" onclick="doLogout()" style="color:var(--danger)"><i class="fa fa-right-from-bracket"></i><span>Logout</span></div>
+    </div>
+  </div>
 
-        <!-- ════════════════════════════════════════════════════════════
-        TAB 3: COURSE CONTENT
-        ════════════════════════════════════════════════════════════ -->
-        <div class="tab-content" id="tab-content">
-
-            <div class="content-subtabs">
-                <button class="csub active" data-csub="chapters" onclick="switchContentSubtab('chapters')"><i class="fas fa-layer-group"></i> Chapters</button>
-                <button class="csub" data-csub="lectures" onclick="switchContentSubtab('lectures')"><i class="fas fa-video"></i> Lectures</button>
-                <button class="csub" data-csub="pdfs" onclick="switchContentSubtab('pdfs')"><i class="fas fa-file-pdf"></i> PDFs</button>
-            </div>
-
-            <!-- ─── CHAPTERS ─── -->
-            <div class="content-subtab-content active" id="csubChapters">
-                <div class="panel-card">
-                    <h3><i class="fas fa-plus-circle"></i> Add Chapter</h3>
-                    <div class="form-group">
-                        <label>Select Batch</label>
-                        <select id="chapterBatch" onchange="renderChapterList()"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Chapter Name</label>
-                        <input type="text" id="newChapterName" placeholder="e.g., Arithmetic" />
-                    </div>
-                    <div class="form-group">
-                        <label>Chapter Icon</label>
-                        <div class="icon-type-toggle">
-                            <button type="button" class="icon-type-btn active" data-icontype="emoji" onclick="setChapterIconType('emoji')"><i class="fas fa-icons"></i> Emoji</button>
-                            <button type="button" class="icon-type-btn" data-icontype="url" onclick="setChapterIconType('url')"><i class="fas fa-image"></i> Logo URL</button>
-                        </div>
-                        <input type="text" id="newChapterIconEmoji" placeholder="e.g., 📁 or 🧮" maxlength="4" style="margin-top:8px;" />
-                        <input type="text" id="newChapterIconUrl" placeholder="https://example.com/logo.png" style="margin-top:8px;display:none;" />
-                    </div>
-                    <button class="btn-submit" onclick="addChapter()"><i class="fas fa-plus"></i> Add Chapter</button>
-                </div>
-                <div class="panel-card">
-                    <h3><i class="fas fa-list"></i> Chapters <span id="chapterCount" style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;"></span></h3>
-                    <div id="chapterList"></div>
-                </div>
-            </div>
-
-            <!-- ─── LECTURES ─── -->
-            <div class="content-subtab-content" id="csubLectures">
-                <div class="panel-card">
-                    <h3><i class="fas fa-plus-circle"></i> Add Lecture</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Select Batch</label>
-                            <select id="lectureBatch" onchange="populateChapterSelect(this.value,'lectureChapter'); renderLectureList();"></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Select Chapter</label>
-                            <select id="lectureChapter" onchange="renderLectureList()"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Lecture Name</label>
-                        <input type="text" id="newLectureName" placeholder="e.g., Introduction" />
-                    </div>
-                    <div class="form-group">
-                        <label>Video URL</label>
-                        <input type="text" id="newLectureUrl" placeholder="YouTube or MP4 link" />
-                    </div>
-                    <button class="btn-submit" onclick="addLecture()"><i class="fas fa-plus"></i> Add Lecture</button>
-                </div>
-                <div class="panel-card">
-                    <h3><i class="fas fa-list"></i> Lectures <span id="lectureCount" style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;"></span></h3>
-                    <div id="lectureList"></div>
-                </div>
-            </div>
-
-            <!-- ─── PDFS ─── -->
-            <div class="content-subtab-content" id="csubPdfs">
-                <div class="panel-card">
-                    <h3><i class="fas fa-plus-circle"></i> Add PDF</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Select Batch</label>
-                            <select id="pdfBatch" onchange="populateChapterSelect(this.value,'pdfChapter'); renderPdfList();"></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Select Chapter</label>
-                            <select id="pdfChapter" onchange="renderPdfList()"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>PDF Name</label>
-                        <input type="text" id="newPdfName" placeholder="Handwritten Notes" />
-                    </div>
-                    <div class="form-group">
-                        <label>PDF URL</label>
-                        <input type="text" id="newPdfUrl" placeholder="https://example.com/notes.pdf" />
-                    </div>
-                    <button class="btn-submit" onclick="addPdf()"><i class="fas fa-plus"></i> Add PDF</button>
-                </div>
-                <div class="panel-card">
-                    <h3><i class="fas fa-list"></i> PDFs <span id="pdfCount" style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;"></span></h3>
-                    <div id="pdfList"></div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- ════════════════════════════════════════════════════════════
-        TAB 4: STUDENTS
-        ════════════════════════════════════════════════════════════ -->
-        <div class="tab-content" id="tab-students">
-            <div class="stats-grid" id="studentStats">
-                <div class="stat-card">
-                    <div class="number" id="totalEnrollments">0</div>
-                    <div class="label">Total Enrollments</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" id="totalStudents">0</div>
-                    <div class="label">Unique Students</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" id="mostEnrolledBatch">-</div>
-                    <div class="label">Most Enrolled Batch</div>
-                </div>
-            </div>
-            <div class="panel-card">
-                <h3><i class="fas fa-user-graduate"></i> Student List</h3>
-                <div id="studentList">
-                    <div style="color:var(--text-secondary);text-align:center;padding:30px 0;">
-                        <i class="fas fa-users" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
-                        No students enrolled yet
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ════════════════════════════════════════════════════════════
-        TAB 5: ANALYTICS (removed)
-        ════════════════════════════════════════════════════════════ -->
-
-        <!-- ════════════════════════════════════════════════════════════
-        TAB 6: NOTIFICATIONS (With Delete Option)
-        ════════════════════════════════════════════════════════════ -->
-        <div class="tab-content" id="tab-notifications">
-            <div class="panel-card">
-                <h3><i class="fas fa-bell"></i> Send Notification to Users</h3>
-                <form id="notificationForm">
-                    <div class="form-group">
-                        <label>Notification Title</label>
-                        <input type="text" id="notifTitle" placeholder="e.g. New Course Added!" />
-                    </div>
-                    <div class="form-group">
-                        <label>Message *</label>
-                        <textarea id="notifMessage" rows="4" placeholder="Write your notification message here..." required></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Icon</label>
-                            <select id="notifIcon">
-                                <option value="fa-bell">🔔 Bell</option>
-                                <option value="fa-star">⭐ Star</option>
-                                <option value="fa-rocket">🚀 Rocket</option>
-                                <option value="fa-gem">💎 Gem</option>
-                                <option value="fa-fire">🔥 Fire</option>
-                                <option value="fa-gift">🎁 Gift</option>
-                                <option value="fa-trophy">🏆 Trophy</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Send To</label>
-                            <select id="notifTarget">
-                                <option value="all">All Users</option>
-                                <option value="enrolled">Enrolled Users Only</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Notification</button>
-                </form>
-            </div>
-            <div class="panel-card">
-                <h3><i class="fas fa-history"></i> Notification History</h3>
-                <div id="notifHistory">
-                    <div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
-                        No notifications sent yet
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ════════════════════════════════════════════════════════════
-        TAB 7: SETTINGS
-        ════════════════════════════════════════════════════════════ -->
-        <div class="tab-content" id="tab-settings">
-            <div class="panel-card">
-                <h3><i class="fas fa-palette"></i> Theme Settings</h3>
-                <div class="form-group">
-                    <label>Theme Mode</label>
-                    <select id="themeMode" onchange="toggleTheme()">
-                        <option value="dark">Dark</option>
-                        <option value="light">Light</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="panel-card">
-                <h3><i class="fas fa-database"></i> Data Management</h3>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                    <button class="btn-success" onclick="exportData()"><i class="fas fa-download"></i> Export All Data</button>
-                    <button class="btn-warning" onclick="importData()"><i class="fas fa-upload"></i> Import Data</button>
-                    <button class="btn-danger" onclick="resetAllData()"><i class="fas fa-trash"></i> Reset All Data</button>
-                </div>
-                <div style="margin-top:12px;font-size:0.8rem;color:var(--text-dim);">
-                    <i class="fas fa-info-circle"></i> Data is stored in your browser's localStorage.
-                </div>
-            </div>
-
-            <div class="panel-card">
-                <h3><i class="fas fa-arrow-right"></i> Batch Order / Drag & Drop</h3>
-                <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px;">Drag handles to reorder batches within each institute.</p>
-                <div id="batchOrderList"></div>
-            </div>
-        </div>
-
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <div class="topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <button class="topbar-btn" onclick="refreshCurrent()" title="Refresh"><i class="fa fa-rotate-right"></i></button>
+        <button class="topbar-btn" onclick="navTo('notif')" title="Send notification"><i class="fa fa-bell"></i></button>
+      </div>
     </div>
 
-    <!-- ─── TOAST ─── -->
-    <div class="toast-modern" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Success!</span></div>
-
-    <script>
-        // ═══════════════════════════════════════════════════════════════
-        //  DATA
-        // ═══════════════════════════════════════════════════════════════
-
-        const DEFAULT_INSTITUTES = [
-            { id: 'kgs', icon: '🏛️', name: 'Khan Global Studies', subtitle: 'UPSC · STATE PCS · SSC', desc: 'Khan Sir ki structured live aur recorded classes...', tag: 'UPSC · PCS · SSC', logo: '', status: 'active' },
-            { id: 'rwa', icon: '🛡️', name: 'Rozgar With Ankit', subtitle: 'DEFENCE · POLICE · SSC GD', desc: 'Ankit Bhati Sir ki team dwara...', tag: 'Defence · Police', logo: '', status: 'active' },
-            { id: 'studyiq', icon: '📘', name: 'StudyIQ', subtitle: 'UPSC · STATE PSC · JUDICIARY', desc: 'UPSC Civil Services, State PSC aur Judiciary...', tag: 'UPSC · Judiciary', logo: '', status: 'active' },
-            { id: 'selectionway', icon: '🚂', name: 'SelectionWay', subtitle: 'SSC · RAILWAY · BANKING', desc: 'Gagan Sir ki SSC, RRB aur banking exams...', tag: 'SSC · Railway · Banking', logo: '', status: 'active' },
-            { id: 'nexttoppers', icon: '🎯', name: 'Next Toppers', subtitle: 'CBSE · CLASS 9-12', desc: 'Shobhit Nirwan, Prashant Kirad aur Digraj Singh Rajput...', tag: 'CBSE 9-12', logo: '', status: 'active' }
-        ];
-
-        const DEFAULT_BATCHES = {
-            nexttoppers: [
-                { id: 'class12', name: 'Class 12th', meta: 'CBSE · Science & Commerce', price: { original: 1499,
-                        discounted: 999 }, isFree: false, badge: '₹999/-', image: '', overview: '', overviewData: '',
-                    status: 'active', order: 0 },
-                { id: 'cuet2026', name: 'CUET 2026 Humanities', meta: 'CUET (Humanities)', price: null, isFree: true,
-                    badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active', order: 1 },
-                { id: 'class8to12', name: 'Class 8th to 12th', meta: 'Olympiad · IOQM CRASH COURSE',
-                    price: { original: 2999, discounted: 2499 }, isFree: false, badge: '₹2499/-', image: '',
-                    overview: '', overviewData: '', status: 'active', order: 2 },
-                { id: 'ioqm', name: 'IOQM - CRASH COURSE', meta: 'Olympiad', price: null, isFree: true, badge: 'FREE',
-                    image: '', overview: '', overviewData: '', status: 'active', order: 3 }
-            ],
-            kgs: [
-                { id: 'upsc2026', name: 'UPSC Prelims 2026', meta: 'GS + CSAT', price: { original: 2999,
-                        discounted: 1999 }, isFree: false, badge: '₹1999/-', image: '', overview: '',
-                    overviewData: '', status: 'active', order: 0 },
-                { id: 'ssc2026', name: 'SSC CGL 2026', meta: 'Tier 1 + Tier 2', price: null, isFree: true,
-                    badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active', order: 1 }
-            ],
-            rwa: [
-                { id: 'defence2026', name: 'Defence Exam 2026', meta: 'Airforce · NDA · Navy', price: null,
-                    isFree: true, badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active',
-                    order: 0 },
-                { id: 'police2026', name: 'Delhi Police 2026', meta: 'Constable · SI', price: { original: 999,
-                        discounted: 499 }, isFree: false, badge: '₹499/-', image: '', overview: '',
-                    overviewData: '', status: 'active', order: 1 }
-            ],
-            studyiq: [
-                { id: 'upsc2027', name: 'UPSC 2027 Foundation', meta: 'Comprehensive Course', price: { original: 4999,
-                        discounted: 3499 }, isFree: false, badge: '₹3499/-', image: '', overview: '',
-                    overviewData: '', status: 'active', order: 0 },
-                { id: 'judiciary2026', name: 'Judiciary 2026', meta: 'PCS J · Civil Judge', price: null,
-                    isFree: true, badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active',
-                    order: 1 }
-            ],
-            selectionway: [
-                { id: 'ssc2027', name: 'SSC 2027 Batch', meta: 'CGL · CHSL · MTS', price: { original: 1999,
-                        discounted: 1299 }, isFree: false, badge: '₹1299/-', image: '', overview: '',
-                    overviewData: '', status: 'active', order: 0 },
-                { id: 'banking2026', name: 'Banking 2026', meta: 'IBPS · SBI · RRB', price: null, isFree: true,
-                    badge: 'FREE', image: '', overview: '', overviewData: '', status: 'active', order: 1 }
-            ]
-        };
-
-        const DEFAULT_CONTENT = {};
-
-        let INSTITUTES = [];
-        let BATCHES = {};
-        let COURSE_CONTENT = {};
-        let STUDENTS = [];
-        let NOTIFICATIONS = [];
-
-        let editingId = null;
-
-        // ═══════════════════════════════════════════════════════════════
-        //  LOAD / SAVE
-        // ═══════════════════════════════════════════════════════════════
-
-        function loadData() {
-            try {
-                const saved = localStorage.getItem('eduverse_institutes');
-                INSTITUTES = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_INSTITUTES));
-                if (!INSTITUTES || INSTITUTES.length === 0) INSTITUTES = JSON.parse(JSON.stringify(DEFAULT_INSTITUTES));
-            } catch (e) { INSTITUTES = JSON.parse(JSON.stringify(DEFAULT_INSTITUTES)); }
-
-            try {
-                const saved = localStorage.getItem('eduverse_batches');
-                BATCHES = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_BATCHES));
-                if (!BATCHES || Object.keys(BATCHES).length === 0) BATCHES = JSON.parse(JSON.stringify(DEFAULT_BATCHES));
-            } catch (e) { BATCHES = JSON.parse(JSON.stringify(DEFAULT_BATCHES)); }
-
-            try {
-                const saved = localStorage.getItem('eduverse_content');
-                COURSE_CONTENT = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_CONTENT));
-            } catch (e) { COURSE_CONTENT = JSON.parse(JSON.stringify(DEFAULT_CONTENT)); }
-
-            try {
-                const saved = localStorage.getItem('eduverse_students');
-                STUDENTS = saved ? JSON.parse(saved) : [];
-                if (!Array.isArray(STUDENTS)) STUDENTS = [];
-            } catch (e) { STUDENTS = []; }
-
-            try {
-                const saved = localStorage.getItem('eduverse_notifications');
-                NOTIFICATIONS = saved ? JSON.parse(saved) : [];
-                if (!Array.isArray(NOTIFICATIONS)) NOTIFICATIONS = [];
-            } catch (e) { NOTIFICATIONS = []; }
-        }
-
-        function saveData() {
-            localStorage.setItem('eduverse_institutes', JSON.stringify(INSTITUTES));
-            localStorage.setItem('eduverse_batches', JSON.stringify(BATCHES));
-            localStorage.setItem('eduverse_content', JSON.stringify(COURSE_CONTENT));
-            localStorage.setItem('eduverse_students', JSON.stringify(STUDENTS));
-            localStorage.setItem('eduverse_notifications', JSON.stringify(NOTIFICATIONS));
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  TOAST
-        // ═══════════════════════════════════════════════════════════════
-
-        function showToast(msg, duration = 2500) {
-            document.getElementById('toastMsg').textContent = msg;
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => toast.classList.remove('show'), duration);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  TAB SWITCHING
-        // ═══════════════════════════════════════════════════════════════
-
-        document.querySelectorAll('.admin-tabs .tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.admin-tabs .tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                const target = document.getElementById('tab-' + tab.dataset.tab);
-                if (target) target.classList.add('active');
-
-                if (tab.dataset.tab === 'students') refreshStudents();
-                if (tab.dataset.tab === 'batches') renderAllBatches();
-                if (tab.dataset.tab === 'content') populateContentBatchSelects();
-                if (tab.dataset.tab === 'notifications') { renderNotificationHistory(); populateNotifTargetSelect(); }
-                if (tab.dataset.tab === 'settings') renderBatchOrderList();
-            });
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  1️⃣ INSTITUTE MANAGEMENT
-        // ═══════════════════════════════════════════════════════════════
-
-        function resetInstituteForm() {
-            document.getElementById('instituteForm').reset();
-            document.getElementById('logoPreview').innerHTML = '<span>No logo uploaded</span>';
-            editingId = null;
-            document.getElementById('formTitle').textContent = 'Add New Institute';
-            document.getElementById('submitBtnText').textContent = 'Add Institute';
-            document.querySelector('#instituteForm .btn-submit').innerHTML = '<i class="fas fa-plus"></i> Add Institute';
-        }
-
-        document.getElementById('instLogo').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    document.getElementById('logoPreview').innerHTML =
-                        `<img src="${ev.target.result}" alt="Logo Preview" /><span>${file.name}</span>`;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        document.getElementById('instituteForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('instName').value.trim();
-            if (!name) { showToast('⚠️ Institute name is required!', 2000); return; }
-
-            const icon = '🏫'; // Fixed icon, removed emoji input
-            const tag = document.getElementById('instTag').value.trim() || 'Institute';
-            const subtitle = document.getElementById('instSubtitle').value.trim() || 'Learn with us';
-            const desc = document.getElementById('instDesc').value.trim() || 'Quality education for all.';
-            const status = document.getElementById('instStatus').value;
-
-            let logo = '';
-            const file = document.getElementById('instLogo').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    logo = ev.target.result;
-                    saveInstitute(name, icon, tag, subtitle, desc, logo, status);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                saveInstitute(name, icon, tag, subtitle, desc, logo, status);
-            }
-        });
-
-        function saveInstitute(name, icon, tag, subtitle, desc, logo, status) {
-            if (editingId) {
-                const idx = INSTITUTES.findIndex(i => i.id === editingId);
-                if (idx !== -1) {
-                    INSTITUTES[idx] = { ...INSTITUTES[idx], name, icon, tag, subtitle, desc, logo: logo || INSTITUTES[idx]
-                            .logo, status };
-                    showToast(`✏️ "${name}" updated!`, 2000);
-                }
-                editingId = null;
-            } else {
-                const newId = name.toLowerCase().replace(/\s+/g, '') + Date.now();
-                INSTITUTES.push({ id: newId, name, icon, tag, subtitle, desc, logo, status });
-                BATCHES[newId] = [];
-                showToast(`✅ "${name}" added!`, 2000);
-            }
-            saveData();
-            renderInstitutes();
-            populateInstituteSelects();
-            resetInstituteForm();
-        }
-
-        function editInstitute(id) {
-            const inst = INSTITUTES.find(i => i.id === id);
-            if (!inst) return;
-            editingId = id;
-            document.getElementById('instName').value = inst.name;
-            document.getElementById('instTag').value = inst.tag || '';
-            document.getElementById('instSubtitle').value = inst.subtitle || '';
-            document.getElementById('instDesc').value = inst.desc || '';
-            document.getElementById('instStatus').value = inst.status || 'active';
-            if (inst.logo) {
-                document.getElementById('logoPreview').innerHTML =
-                    `<img src="${inst.logo}" alt="Logo" /><span>Current logo</span>`;
-            }
-            document.getElementById('formTitle').textContent = 'Edit Institute';
-            document.getElementById('submitBtnText').textContent = 'Update Institute';
-            document.querySelector('#instituteForm .btn-submit').innerHTML = '<i class="fas fa-save"></i> Update Institute';
-            document.querySelector('[data-tab="institutes"]').click();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function deleteInstitute(id) {
-            const inst = INSTITUTES.find(i => i.id === id);
-            if (!inst) return;
-            if (confirm(`Delete "${inst.name}" and all its batches?`)) {
-                INSTITUTES = INSTITUTES.filter(i => i.id !== id);
-                delete BATCHES[id];
-                saveData();
-                renderInstitutes();
-                populateInstituteSelects();
-                showToast(`🗑️ "${inst.name}" deleted!`, 2000);
-            }
-        }
-
-        function toggleInstituteStatus(id) {
-            const inst = INSTITUTES.find(i => i.id === id);
-            if (inst) {
-                inst.status = inst.status === 'active' ? 'inactive' : 'active';
-                saveData();
-                renderInstitutes();
-                showToast(`📌 "${inst.name}" ${inst.status === 'active' ? 'activated' : 'deactivated'}`, 1500);
-            }
-        }
-
-        function renderInstitutes() {
-            const grid = document.getElementById('instituteGrid');
-            document.getElementById('instCount').textContent = `(${INSTITUTES.length})`;
-            grid.innerHTML = '';
-            if (INSTITUTES.length === 0) {
-                grid.innerHTML =
-                    `<div style="grid-column:1/-1;text-align:center;color:var(--text-secondary);padding:30px 0;">
-                    <i class="fas fa-plus-circle" style="font-size:2rem;display:block;margin-bottom:10px;color:var(--primary);"></i>
-                    No institutes yet
-                </div>`;
-                return;
-            }
-            INSTITUTES.forEach(inst => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                const batches = BATCHES[inst.id] || [];
-                div.innerHTML = `
-                    <div class="item-top">
-                        ${inst.logo ? `<img src="${inst.logo}" style="width:40px;height:40px;border-radius:10px;object-fit:cover;" />` : `<span class="icon-big">🏫</span>`}
-                        <span class="badge-status ${inst.status === 'active' ? 'active' : 'inactive'}">${inst.status || 'active'}</span>
-                    </div>
-                    <h4>${inst.name}</h4>
-                    <div class="sub">${inst.subtitle || ''} · ${batches.length} batches</div>
-                    <div class="item-actions">
-                        <button class="btn-warning" onclick="editInstitute('${inst.id}')"><i class="fas fa-pen"></i> Edit</button>
-                        <button class="btn-success" onclick="toggleInstituteStatus('${inst.id}')"><i class="fas fa-${inst.status === 'active' ? 'pause' : 'play'}"></i> ${inst.status === 'active' ? 'Deactivate' : 'Activate'}</button>
-                        <button class="btn-danger" onclick="deleteInstitute('${inst.id}')"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                `;
-                grid.appendChild(div);
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  2️⃣ BATCH MANAGEMENT
-        // ═══════════════════════════════════════════════════════════════
-
-        function populateInstituteSelects() {
-            const selects = ['batchInstitute'];
-            selects.forEach(id => {
-                const sel = document.getElementById(id);
-                if (!sel) return;
-                sel.innerHTML = '';
-                INSTITUTES.forEach(inst => {
-                    const opt = document.createElement('option');
-                    opt.value = inst.id;
-                    opt.textContent = inst.name;
-                    sel.appendChild(opt);
-                });
-            });
-            document.getElementById('batchInstitute').dispatchEvent(new Event('change'));
-            populateContentBatchSelects();
-        }
-
-        document.getElementById('batchType').addEventListener('change', function() {
-            const priceFields = document.getElementById('priceFields');
-            priceFields.style.display = this.value === 'paid' ? 'grid' : 'none';
-        });
-
-        document.getElementById('batchForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const instId = document.getElementById('batchInstitute').value;
-            const name = document.getElementById('batchName').value.trim();
-            if (!instId || !name) { showToast('⚠️ Institute and Batch name required!', 2000); return; }
-
-            const meta = document.getElementById('batchMeta').value.trim() || 'Course';
-            const isFree = document.getElementById('batchType').value === 'free';
-            const original = parseInt(document.getElementById('batchOriginalPrice').value) || 0;
-            const discounted = parseInt(document.getElementById('batchDiscountedPrice').value) || 0;
-            const image = document.getElementById('batchImage').value.trim() || '';
-            const overview = document.getElementById('batchOverview').value.trim() || '';
-            const status = document.getElementById('batchStatus').value;
-
-            const batch = {
-                id: name.toLowerCase().replace(/\s+/g, '') + Date.now(),
-                name,
-                meta,
-                isFree,
-                price: isFree ? null : { original, discounted },
-                badge: isFree ? 'FREE' : `₹${discounted}/-`,
-                image,
-                overview,
-                overviewData: overview,
-                status: status,
-                order: (BATCHES[instId] || []).length
-            };
-
-            if (!BATCHES[instId]) BATCHES[instId] = [];
-            BATCHES[instId].push(batch);
-            saveData();
-            renderAllBatches();
-            renderInstitutes();
-            document.getElementById('batchForm').reset();
-            document.getElementById('priceFields').style.display = 'grid';
-            showToast(`✅ "${name}" added to batch!`, 2000);
-        });
-
-        function renderAllBatches() {
-            const container = document.getElementById('allBatchesList');
-            let total = 0;
-            let html = '';
-            for (const [instId, batches] of Object.entries(BATCHES)) {
-                const inst = INSTITUTES.find(i => i.id === instId);
-                if (!inst || batches.length === 0) continue;
-                total += batches.length;
-                html += `<div style="margin-bottom:12px;">
-                    <h4 style="color:var(--primary);font-size:0.9rem;">${inst.name}</h4>
-                    ${batches.map((b, idx) => `
-                        <div class="batch-item-list">
-                            <div class="info">
-                                <div class="name">${b.name} ${b.isFree ? '🆓' : '💰'} 
-                                    <span style="font-size:0.6rem;color:${b.status === 'active' ? 'var(--success)' : 'var(--danger)'};">(${b.status || 'active'})</span>
-                                </div>
-                                <div class="meta">${b.meta || ''} ${b.isFree ? 'FREE' : `₹${b.price?.discounted || ''}`}</div>
-                                ${b.image ? `<div style="font-size:0.6rem;color:var(--text-dim);"><i class="fas fa-image"></i> Image set</div>` : ''}
-                                ${b.overview ? `<div style="font-size:0.6rem;color:var(--success);"><i class="fas fa-check-circle"></i> Overview set</div>` : ''}
-                            </div>
-                            <div class="actions">
-                                <button onclick="editBatch('${instId}','${b.id}')" class="btn-warning"><i class="fas fa-pen"></i> Edit</button>
-                                <button onclick="toggleBatchStatus('${instId}','${b.id}')" class="btn-success"><i class="fas fa-${b.status === 'active' ? 'pause' : 'play'}"></i></button>
-                                <button onclick="deleteBatch('${instId}','${b.id}')" class="btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>`;
-            }
-            document.getElementById('batchCount').textContent = `(${total})`;
-            container.innerHTML = html || '<div style="color:var(--text-secondary);text-align:center;padding:30px 0;">No batches yet. Add one above!</div>';
-            populateContentBatchSelects();
-        }
-
-        function toggleBatchStatus(instId, batchId) {
-            const batches = BATCHES[instId] || [];
-            const batch = batches.find(b => b.id === batchId);
-            if (batch) {
-                batch.status = batch.status === 'active' ? 'inactive' : 'active';
-                saveData();
-                renderAllBatches();
-                renderInstitutes();
-                showToast(`📌 "${batch.name}" ${batch.status === 'active' ? 'activated' : 'deactivated'}`, 1500);
-            }
-        }
-
-        function editBatch(instId, batchId) {
-            const batches = BATCHES[instId] || [];
-            const batch = batches.find(b => b.id === batchId);
-            if (!batch) return;
-
-            document.querySelector('[data-tab="batches"]').click();
-
-            document.getElementById('batchInstitute').value = instId;
-            document.getElementById('batchName').value = batch.name;
-            document.getElementById('batchMeta').value = batch.meta || '';
-            document.getElementById('batchType').value = batch.isFree ? 'free' : 'paid';
-            document.getElementById('batchOriginalPrice').value = batch.price?.original || '';
-            document.getElementById('batchDiscountedPrice').value = batch.price?.discounted || '';
-            document.getElementById('batchImage').value = batch.image || '';
-            document.getElementById('batchOverview').value = batch.overview || '';
-            document.getElementById('batchStatus').value = batch.status || 'active';
-
-            const btn = document.querySelector('#batchForm .btn-submit');
-            btn.innerHTML = '<i class="fas fa-save"></i> Update Batch';
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('batchName').value.trim();
-                if (!name) { showToast('⚠️ Batch name required!', 2000); return; }
-                const idx = BATCHES[instId].findIndex(b => b.id === batchId);
-                if (idx !== -1) {
-                    BATCHES[instId][idx] = {
-                        ...BATCHES[instId][idx],
-                        name,
-                        meta: document.getElementById('batchMeta').value.trim() || 'Course',
-                        isFree: document.getElementById('batchType').value === 'free',
-                        price: document.getElementById('batchType').value === 'free' ? null : {
-                            original: parseInt(document.getElementById('batchOriginalPrice').value) || 0,
-                            discounted: parseInt(document.getElementById('batchDiscountedPrice').value) || 0
-                        },
-                        badge: document.getElementById('batchType').value === 'free' ? 'FREE' :
-                            `₹${parseInt(document.getElementById('batchDiscountedPrice').value) || 0}/-`,
-                        image: document.getElementById('batchImage').value.trim() || '',
-                        overview: document.getElementById('batchOverview').value.trim() || '',
-                        overviewData: document.getElementById('batchOverview').value.trim() || '',
-                        status: document.getElementById('batchStatus').value
-                    };
-                    saveData();
-                    renderAllBatches();
-                    renderInstitutes();
-                    showToast(`✅ "${name}" updated!`, 2000);
-                    btn.innerHTML = '<i class="fas fa-plus"></i> Add Batch';
-                    btn.onclick = null;
-                    document.getElementById('batchForm').reset();
-                    document.getElementById('priceFields').style.display = 'grid';
-                }
-            };
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function deleteBatch(instId, batchId) {
-            if (!confirm('Delete this batch?')) return;
-            BATCHES[instId] = (BATCHES[instId] || []).filter(b => b.id !== batchId);
-            saveData();
-            renderAllBatches();
-            renderInstitutes();
-            showToast('🗑️ Batch deleted!', 1500);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  3️⃣ COURSE CONTENT EDITOR (Chapters → Lectures / PDFs)
-        // ═══════════════════════════════════════════════════════════════
-        // Data shape: COURSE_CONTENT[batchId] = { folders: [ { id, name, icon, lectures: [], pdfs: [] } ] }
-        // This is the exact shape the user-facing index.html reads (data.content.folders).
-
-        function switchContentSubtab(tab) {
-            document.querySelectorAll('.content-subtabs .csub').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.content-subtabs .csub[data-csub="${tab}"]`).classList.add('active');
-            document.querySelectorAll('.content-subtab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('csub' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-        }
-
-        function getAllBatchesFlat() {
-            const flat = [];
-            for (const [instId, batches] of Object.entries(BATCHES)) {
-                const inst = INSTITUTES.find(i => i.id === instId);
-                (batches || []).forEach(b => flat.push({ id: b.id, name: `${inst ? inst.name + ' - ' : ''}${b.name}` }));
-            }
-            return flat;
-        }
-
-        function populateContentBatchSelects() {
-            const flat = getAllBatchesFlat();
-            ['chapterBatch', 'lectureBatch', 'pdfBatch'].forEach(selId => {
-                const sel = document.getElementById(selId);
-                if (!sel) return;
-                const current = sel.value;
-                sel.innerHTML = '<option value="">-- Select Batch --</option>' +
-                    flat.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-                if (flat.some(b => b.id === current)) sel.value = current;
-            });
-            populateChapterSelect(document.getElementById('lectureBatch')?.value || '', 'lectureChapter');
-            populateChapterSelect(document.getElementById('pdfBatch')?.value || '', 'pdfChapter');
-            renderChapterList();
-            renderLectureList();
-            renderPdfList();
-        }
-
-        function populateChapterSelect(batchId, selectId) {
-            const sel = document.getElementById(selectId);
-            if (!sel) return;
-            const current = sel.value;
-            const folders = (COURSE_CONTENT[batchId]?.folders) || [];
-            sel.innerHTML = '<option value="">-- Select Chapter --</option>' +
-                folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
-            if (folders.some(f => f.id === current)) sel.value = current;
-        }
-
-        // ─── Chapter CRUD ──────────────────────────────────────────
-        let chapterIconType = 'emoji';
-        function setChapterIconType(type) {
-            chapterIconType = type;
-            document.querySelectorAll('.icon-type-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.icon-type-btn[data-icontype="${type}"]`).classList.add('active');
-            document.getElementById('newChapterIconEmoji').style.display = type === 'emoji' ? 'block' : 'none';
-            document.getElementById('newChapterIconUrl').style.display = type === 'url' ? 'block' : 'none';
-        }
-
-        function addChapter() {
-            const batchId = document.getElementById('chapterBatch').value;
-            const nameInput = document.getElementById('newChapterName');
-            const name = nameInput.value.trim();
-            const emojiInput = document.getElementById('newChapterIconEmoji');
-            const urlInput = document.getElementById('newChapterIconUrl');
-
-            if (!batchId) { showToast('⚠️ Select a batch first!', 1500); return; }
-            if (!name) { showToast('⚠️ Enter a chapter name!', 1500); return; }
-
-            let icon = '📁';
-            let iconUrl = '';
-            if (chapterIconType === 'url' && urlInput.value.trim()) {
-                iconUrl = urlInput.value.trim();
-            } else if (emojiInput.value.trim()) {
-                icon = emojiInput.value.trim();
-            }
-
-            if (!COURSE_CONTENT[batchId]) COURSE_CONTENT[batchId] = { folders: [] };
-            if (!COURSE_CONTENT[batchId].folders) COURSE_CONTENT[batchId].folders = [];
-            COURSE_CONTENT[batchId].folders.push({ id: 'ch_' + Date.now(), name, icon, iconUrl, lectures: [], pdfs: [] });
-
-            saveData();
-            nameInput.value = '';
-            emojiInput.value = '';
-            urlInput.value = '';
-            renderChapterList();
-            populateChapterSelect(document.getElementById('lectureBatch').value, 'lectureChapter');
-            populateChapterSelect(document.getElementById('pdfBatch').value, 'pdfChapter');
-            showToast(`✅ Chapter "${name}" added!`, 1500);
-        }
-
-        function deleteChapter(batchId, chapterId) {
-            if (!confirm('Delete this chapter and all its lectures/PDFs?')) return;
-            const folders = COURSE_CONTENT[batchId]?.folders || [];
-            const idx = folders.findIndex(f => f.id === chapterId);
-            if (idx > -1) folders.splice(idx, 1);
-            saveData();
-            renderChapterList();
-            populateChapterSelect(document.getElementById('lectureBatch').value, 'lectureChapter');
-            populateChapterSelect(document.getElementById('pdfBatch').value, 'pdfChapter');
-            renderLectureList();
-            renderPdfList();
-            showToast('🗑️ Chapter deleted!', 1500);
-        }
-
-        function renderChapterList() {
-            const container = document.getElementById('chapterList');
-            const countEl = document.getElementById('chapterCount');
-            if (!container) return;
-            const batchId = document.getElementById('chapterBatch')?.value;
-            if (!batchId) {
-                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">Select a batch to view chapters</div>`;
-                countEl.textContent = '';
-                return;
-            }
-            const folders = COURSE_CONTENT[batchId]?.folders || [];
-            countEl.textContent = `(${folders.length})`;
-            if (folders.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
-                    <i class="fas fa-plus-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
-                    No chapters yet. Add your first chapter above!
-                </div>`;
-                return;
-            }
-            container.innerHTML = folders.map(f => `
-                <div class="batch-item-list">
-                    <div class="info">
-                        <div class="name">${f.iconUrl ? `<img src="${f.iconUrl}" style="width:18px;height:18px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:2px;">` : (f.icon || '📁')} ${f.name}</div>
-                        <div class="meta">${(f.lectures || []).length} lectures · ${(f.pdfs || []).length} PDFs</div>
-                    </div>
-                    <div class="actions">
-                        <button onclick="deleteChapter('${batchId}','${f.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ─── Lecture CRUD ──────────────────────────────────────────
-        function addLecture() {
-            const batchId = document.getElementById('lectureBatch').value;
-            const chapterId = document.getElementById('lectureChapter').value;
-            const nameInput = document.getElementById('newLectureName');
-            const urlInput = document.getElementById('newLectureUrl');
-            const name = nameInput.value.trim();
-
-            if (!batchId) { showToast('⚠️ Select a batch!', 1500); return; }
-            if (!chapterId) { showToast('⚠️ Select a chapter!', 1500); return; }
-            if (!name) { showToast('⚠️ Enter a lecture name!', 1500); return; }
-
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            if (!folder) { showToast('⚠️ Chapter not found!', 1500); return; }
-            if (!folder.lectures) folder.lectures = [];
-            folder.lectures.push({
-                id: 'lec_' + Date.now(),
-                name,
-                url: urlInput.value.trim()
-            });
-
-            saveData();
-            nameInput.value = '';
-            urlInput.value = '';
-            renderLectureList();
-            renderChapterList();
-            showToast(`✅ Lecture "${name}" added!`, 1500);
-        }
-
-        function deleteLecture(batchId, chapterId, lectureId) {
-            if (!confirm('Delete this lecture?')) return;
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            if (!folder) return;
-            folder.lectures = (folder.lectures || []).filter(l => l.id !== lectureId);
-            saveData();
-            renderLectureList();
-            renderChapterList();
-            showToast('🗑️ Lecture deleted!', 1500);
-        }
-
-        function renderLectureList() {
-            const container = document.getElementById('lectureList');
-            const countEl = document.getElementById('lectureCount');
-            if (!container) return;
-            const batchId = document.getElementById('lectureBatch')?.value;
-            const chapterId = document.getElementById('lectureChapter')?.value;
-            if (!batchId || !chapterId) {
-                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">Select a batch & chapter to view lectures</div>`;
-                countEl.textContent = '';
-                return;
-            }
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            const lectures = folder?.lectures || [];
-            countEl.textContent = `(${lectures.length})`;
-            if (lectures.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
-                    <i class="fas fa-plus-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
-                    No lectures yet. Add your first lecture above!
-                </div>`;
-                return;
-            }
-            container.innerHTML = lectures.map(l => `
-                <div class="batch-item-list">
-                    <div class="info">
-                        <div class="name"><i class="fas fa-video"></i> ${l.name}</div>
-                        <div class="meta">${l.url || 'No URL set'}</div>
-                    </div>
-                    <div class="actions">
-                        <button onclick="deleteLecture('${batchId}','${chapterId}','${l.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ─── PDF CRUD ──────────────────────────────────────────
-        function addPdf() {
-            const batchId = document.getElementById('pdfBatch').value;
-            const chapterId = document.getElementById('pdfChapter').value;
-            const nameInput = document.getElementById('newPdfName');
-            const urlInput = document.getElementById('newPdfUrl');
-            const name = nameInput.value.trim();
-
-            if (!batchId) { showToast('⚠️ Select a batch!', 1500); return; }
-            if (!chapterId) { showToast('⚠️ Select a chapter!', 1500); return; }
-            if (!name) { showToast('⚠️ Enter a PDF name!', 1500); return; }
-
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            if (!folder) { showToast('⚠️ Chapter not found!', 1500); return; }
-            if (!folder.pdfs) folder.pdfs = [];
-            folder.pdfs.push({
-                id: 'pdf_' + Date.now(),
-                name,
-                url: urlInput.value.trim()
-            });
-
-            saveData();
-            nameInput.value = '';
-            urlInput.value = '';
-            renderPdfList();
-            renderChapterList();
-            showToast(`✅ PDF "${name}" added!`, 1500);
-        }
-
-        function deletePdf(batchId, chapterId, pdfId) {
-            if (!confirm('Delete this PDF?')) return;
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            if (!folder) return;
-            folder.pdfs = (folder.pdfs || []).filter(p => p.id !== pdfId);
-            saveData();
-            renderPdfList();
-            renderChapterList();
-            showToast('🗑️ PDF deleted!', 1500);
-        }
-
-        function renderPdfList() {
-            const container = document.getElementById('pdfList');
-            const countEl = document.getElementById('pdfCount');
-            if (!container) return;
-            const batchId = document.getElementById('pdfBatch')?.value;
-            const chapterId = document.getElementById('pdfChapter')?.value;
-            if (!batchId || !chapterId) {
-                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">Select a batch & chapter to view PDFs</div>`;
-                countEl.textContent = '';
-                return;
-            }
-            const folder = (COURSE_CONTENT[batchId]?.folders || []).find(f => f.id === chapterId);
-            const pdfs = folder?.pdfs || [];
-            countEl.textContent = `(${pdfs.length})`;
-            if (pdfs.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">
-                    <i class="fas fa-plus-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
-                    No PDFs yet. Add your first PDF above!
-                </div>`;
-                return;
-            }
-            container.innerHTML = pdfs.map(p => `
-                <div class="batch-item-list">
-                    <div class="info">
-                        <div class="name"><i class="fas fa-file-pdf"></i> ${p.name}</div>
-                        <div class="meta">${p.url || 'No URL set'}</div>
-                    </div>
-                    <div class="actions">
-                        <button onclick="deletePdf('${batchId}','${chapterId}','${p.id}')" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  4️⃣ STUDENT MANAGEMENT
-        // ═══════════════════════════════════════════════════════════════
-
-        function getRealStudents() {
-            try {
-                const list = JSON.parse(localStorage.getItem('eduverse_students') || '[]');
-                return Array.isArray(list) ? list : [];
-            } catch (e) { return []; }
-        }
-
-        function refreshStudents() {
-            const students = getRealStudents();
-            const totalEnrollments = students.reduce((sum, s) => sum + (Array.isArray(s.enrollments) ? s.enrollments.length : 0), 0);
-
-            // Find the most-enrolled batch name across all students
-            const batchCounts = {};
-            students.forEach(s => (s.enrollments || []).forEach(en => {
-                batchCounts[en.batchName] = (batchCounts[en.batchName] || 0) + 1;
-            }));
-            let mostEnrolled = '-';
-            let maxCount = 0;
-            for (const [name, count] of Object.entries(batchCounts)) {
-                if (count > maxCount) { maxCount = count; mostEnrolled = name; }
-            }
-
-            document.getElementById('totalEnrollments').textContent = totalEnrollments;
-            document.getElementById('totalStudents').textContent = students.length;
-            document.getElementById('mostEnrolledBatch').textContent = mostEnrolled;
-
-            const container = document.getElementById('studentList');
-            if (students.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:30px 0;">
-                    <i class="fas fa-users" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
-                    No students yet. They'll show up here as soon as they open the app.
-                </div>`;
-                return;
-            }
-
-            container.innerHTML = students.slice().reverse().map(s => {
-                const enrollments = s.enrollments || [];
-                const enrollText = enrollments.length > 0
-                    ? enrollments.map(e => e.batchName).join(', ')
-                    : 'Not enrolled in any batch yet';
-                return `
-                <div class="batch-item-list">
-                    <div class="info">
-                        <div class="name"><i class="fas fa-user-circle"></i> ${s.name || 'Unnamed'}</div>
-                        <div class="meta"><i class="fas fa-phone" style="font-size:0.65rem;"></i> ${s.phone || 'N/A'} &nbsp;·&nbsp; Joined: ${s.joinedAt || 'N/A'}</div>
-                        <div class="meta">📚 ${enrollText}</div>
-                    </div>
-                    <div class="actions">
-                        <button onclick="openMessageStudent('${s.id}')" class="btn-submit" style="padding:6px 14px;font-size:0.7rem;"><i class="fas fa-paper-plane"></i> Message</button>
-                    </div>
-                </div>
-            `;
-            }).join('');
-        }
-
-        // ─── Send a personal message to one specific student ───
-        function openMessageStudent(studentId) {
-            const students = getRealStudents();
-            const student = students.find(s => s.id === studentId);
-            if (!student) { showToast('⚠️ Student not found!', 1500); return; }
-
-            document.querySelector('.tab[data-tab="notifications"]').click();
-
-            setTimeout(() => {
-                populateNotifTargetSelect();
-                document.getElementById('notifTarget').value = studentId;
-                document.getElementById('notifTitle').value = `Hi ${student.name}`;
-                document.getElementById('notifMessage').focus();
-                showToast(`✍️ Composing a message for ${student.name}`, 2000);
-            }, 100);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  6️⃣ NOTIFICATIONS (With Delete Option)
-        // ═══════════════════════════════════════════════════════════════
-
-        function populateNotifTargetSelect() {
-            const sel = document.getElementById('notifTarget');
-            if (!sel) return;
-            const current = sel.value;
-            const students = getRealStudents();
-            let html = `<option value="all">All Users</option><option value="enrolled">Enrolled Users Only</option>`;
-            if (students.length > 0) {
-                html += `<optgroup label="Message a specific student">`;
-                html += students.map(s => `<option value="${s.id}">${s.name || 'Unnamed'} (${s.phone || 'N/A'})</option>`).join('');
-                html += `</optgroup>`;
-            }
-            sel.innerHTML = html;
-            if ([...sel.options].some(o => o.value === current)) sel.value = current;
-        }
-
-        document.getElementById('notificationForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const title = document.getElementById('notifTitle').value.trim() || 'New Update';
-            const message = document.getElementById('notifMessage').value.trim();
-            const icon = document.getElementById('notifIcon').value;
-            const targetSelect = document.getElementById('notifTarget');
-            const target = targetSelect.value;
-            const targetLabel = targetSelect.options[targetSelect.selectedIndex]?.text || target;
-
-            if (!message) { showToast('⚠️ Message is required!', 2000); return; }
-
-            const notif = {
-                id: Date.now(),
-                icon: icon,
-                msg: message,
-                title: title,
-                target: target,
-                time: new Date().toLocaleString(),
-                read: false
-            };
-
-            NOTIFICATIONS.unshift(notif);
-            if (NOTIFICATIONS.length > 100) NOTIFICATIONS = NOTIFICATIONS.slice(0, 100);
-            saveData();
-            renderNotificationHistory();
-            document.getElementById('notificationForm').reset();
-            populateNotifTargetSelect();
-            showToast(`📨 Notification sent to ${targetLabel}!`, 2000);
-        });
-
-        function deleteNotification(id) {
-            if (!confirm('Delete this notification?')) return;
-            NOTIFICATIONS = NOTIFICATIONS.filter(n => n.id !== id);
-            saveData();
-            renderNotificationHistory();
-            showToast('🗑️ Notification deleted!', 1500);
-        }
-
-        function renderNotificationHistory() {
-            const container = document.getElementById('notifHistory');
-            if (NOTIFICATIONS.length === 0) {
-                container.innerHTML =
-                    `<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">No notifications sent yet</div>`;
-                return;
-            }
-            container.innerHTML = NOTIFICATIONS.map(n => `
-                <div class="batch-item-list">
-                    <div class="info">
-                        <div class="name"><i class="fas ${n.icon}"></i> ${n.title || 'Notification'}</div>
-                        <div class="meta">${n.msg} <span style="color:var(--text-dim);font-size:0.7rem;">· ${n.time}</span></div>
-                    </div>
-                    <div class="actions">
-                        <button onclick="deleteNotification(${n.id})" class="btn-delete-notif"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  7️⃣ SETTINGS
-        // ═══════════════════════════════════════════════════════════════
-
-        function toggleTheme() {
-            const mode = document.getElementById('themeMode').value;
-            if (mode === 'light') {
-                document.documentElement.style.setProperty('--bg-primary', '#f0f4ff');
-                document.documentElement.style.setProperty('--bg-secondary', '#e8ecf8');
-                document.documentElement.style.setProperty('--text', '#1a1a2e');
-                document.documentElement.style.setProperty('--text-secondary', '#555577');
-                document.documentElement.style.setProperty('--text-dim', '#8888aa');
-                document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.5)');
-                document.documentElement.style.setProperty('--glass-border', 'rgba(0,0,0,0.08)');
-                document.documentElement.style.setProperty('--border', 'rgba(0,0,0,0.08)');
-            } else {
-                document.documentElement.style.setProperty('--bg-primary', '#0a0e1a');
-                document.documentElement.style.setProperty('--bg-secondary', '#111827');
-                document.documentElement.style.setProperty('--text', '#f1f5f9');
-                document.documentElement.style.setProperty('--text-secondary', '#94a3b8');
-                document.documentElement.style.setProperty('--text-dim', '#64748b');
-                document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.03)');
-                document.documentElement.style.setProperty('--glass-border', 'rgba(255,255,255,0.06)');
-                document.documentElement.style.setProperty('--border', 'rgba(255,255,255,0.06)');
-            }
-            showToast(`🎨 Theme changed to ${mode}`, 1500);
-        }
-
-        function renderBatchOrderList() {
-            const container = document.getElementById('batchOrderList');
-            let html = '';
-            for (const [instId, batches] of Object.entries(BATCHES)) {
-                const inst = INSTITUTES.find(i => i.id === instId);
-                if (!inst || batches.length === 0) continue;
-                html += `<div style="margin-bottom:12px;">
-                    <h4 style="color:var(--primary);font-size:0.9rem;">${inst.name}</h4>
-                    ${batches.sort((a,b) => (a.order || 0) - (b.order || 0)).map((b, idx) => `
-                        <div class="batch-item-list" draggable="true" data-inst="${instId}" data-batch="${b.id}" data-order="${idx}">
-                            <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
-                            <div class="info">
-                                <div class="name">${b.name} <span style="font-size:0.6rem;color:${b.status === 'active' ? 'var(--success)' : 'var(--danger)'};">(${b.status || 'active'})</span></div>
-                                <div class="meta">${b.meta || ''}</div>
-                            </div>
-                            <span style="font-size:0.6rem;color:var(--text-dim);">Order: ${idx + 1}</span>
-                        </div>
-                    `).join('')}
-                </div>`;
-            }
-            container.innerHTML = html || '<div style="color:var(--text-secondary);text-align:center;padding:20px 0;">No batches to reorder</div>';
-
-            // Drag and Drop
-            let dragItem = null;
-            container.querySelectorAll('[draggable="true"]').forEach(el => {
-                el.addEventListener('dragstart', (e) => {
-                    dragItem = el;
-                    el.style.opacity = '0.5';
-                });
-                el.addEventListener('dragend', () => {
-                    if (dragItem) dragItem.style.opacity = '1';
-                });
-                el.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    const target = e.target.closest('.batch-item-list');
-                    if (target && target !== dragItem) {
-                        const container2 = target.parentElement;
-                        const rect = target.getBoundingClientRect();
-                        const mid = rect.top + rect.height / 2;
-                        if (e.clientY < mid) {
-                            container2.insertBefore(dragItem, target);
-                        } else {
-                            container2.insertBefore(dragItem, target.nextSibling);
-                        }
-                    }
-                });
-                el.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    if (dragItem) {
-                        const container2 = dragItem.parentElement;
-                        const items = container2.querySelectorAll('.batch-item-list');
-                        const instId = dragItem.dataset.inst;
-                        const batches = BATCHES[instId] || [];
-                        items.forEach((item, idx) => {
-                            const batchId = item.dataset.batch;
-                            const batch = batches.find(b => b.id === batchId);
-                            if (batch) batch.order = idx;
-                        });
-                        saveData();
-                        showToast('✅ Batch order updated!', 1500);
-                        dragItem.style.opacity = '1';
-                        dragItem = null;
-                        renderBatchOrderList();
-                    }
-                });
-            });
-        }
-
-        // ─── Data Export/Import ──────────────────────────────────
-        function exportData() {
-            const data = {
-                institutes: INSTITUTES,
-                batches: BATCHES,
-                content: COURSE_CONTENT,
-                students: STUDENTS,
-                notifications: NOTIFICATIONS,
-                exportedAt: new Date().toISOString()
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `eduverse_backup_${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('📥 Data exported successfully!', 2000);
-        }
-
-        function importData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    try {
-                        const data = JSON.parse(ev.target.result);
-                        if (data.institutes) INSTITUTES = data.institutes;
-                        if (data.batches) BATCHES = data.batches;
-                        if (data.content) COURSE_CONTENT = data.content;
-                        if (data.students) STUDENTS = data.students;
-                        if (data.notifications) NOTIFICATIONS = data.notifications;
-                        saveData();
-                        renderInstitutes();
-                        populateInstituteSelects();
-                        showToast('📥 Data imported successfully!', 2000);
-                        location.reload();
-                    } catch (err) {
-                        showToast('❌ Invalid data file!', 2000);
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
-        }
-
-        function resetAllData() {
-            if (confirm('⚠️ This will delete ALL data! Are you sure?')) {
-                if (confirm('🔴 FINAL WARNING: This cannot be undone!')) {
-                    localStorage.clear();
-                    showToast('🗑️ All data reset!', 2000);
-                    location.reload();
-                }
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  INIT
-        // ═══════════════════════════════════════════════════════════════
-
-        loadData();
-        renderInstitutes();
-        populateInstituteSelects();
-        renderAllBatches();
-        populateContentBatchSelects();
-        renderNotificationHistory();
-        populateNotifTargetSelect();
-        refreshStudents();
-        renderBatchOrderList();
-
-        console.log('🛠️ EduVerse Admin Pro loaded!');
-        console.log('🗑️ Notifications: Delete option added');
-        console.log('📌 Removed: Revenue, Primary Color, Back to User, Icon field, Analytics tab');
-    </script>
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header"><h1>📊 Dashboard</h1><p>Real-time overview of SX Pay</p></div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#7C5CFF,#C471F5)"><i class="fa fa-users"></i></div>
+          <div class="stat-num" id="ds-users">—</div>
+          <div class="stat-lbl">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#06D6A0,#0099FF)"><i class="fa fa-arrow-right-arrow-left"></i></div>
+          <div class="stat-num" id="ds-txns">—</div>
+          <div class="stat-lbl">Transactions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#FFD166,#FF6584)"><i class="fa fa-indian-rupee-sign"></i></div>
+          <div class="stat-num" id="ds-vol">—</div>
+          <div class="stat-lbl">Total Volume</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#0099FF,#7C5CFF)"><i class="fa fa-wallet"></i></div>
+          <div class="stat-num" id="ds-bal">—</div>
+          <div class="stat-lbl">Wallet Balance</div>
+        </div>
+      </div>
+      <div class="dash-charts-row" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-title">Balance Distribution</div>
+          <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">User Stats</div>
+          <div id="userQuickStats" style="display:flex;flex-direction:column;gap:10px;margin-top:4px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Users</div>
+        <div id="ds-recent-users"></div>
+      </div>
+    </div>
+
+    <!-- USER MANAGER -->
+    <div class="page" id="page-users">
+      <div class="page-header"><h1>👥 User Manager</h1><p>View, edit and manage all users</p></div>
+      <div class="card">
+        <div class="search-row">
+          <input class="search-inp" id="userSearch" placeholder="🔍  Search by name, phone, UPI..." oninput="filterUsers()">
+          <button class="filter-btn" onclick="sortUsers()"><i class="fa fa-sort"></i> Sort</button>
+        </div>
+        <div class="users-grid" id="usersGrid"></div>
+      </div>
+    </div>
+
+    <!-- EXPLORE MANAGER -->
+    <div class="page" id="page-explore">
+      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><h1>🧭 Explore Manager</h1><p>Manage explore items shown in app</p></div>
+        <button class="btn-primary" style="padding:10px 18px;font-size:13px;white-space:nowrap" onclick="toggleExplForm()">
+          <i class="fa fa-plus" id="explFormIcon"></i> <span id="explFormBtnTxt">Add New</span>
+        </button>
+      </div>
+      <!-- Add form (hidden by default on mobile) -->
+      <div id="explAddPanel" style="display:none;margin-bottom:16px">
+        <div class="card">
+          <div class="card-title"><i class="fa fa-plus" style="color:var(--p)"></i> Add New Item</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="img-prev-box" id="explImgBox">
+              <img id="explImgPrev" alt="">
+              <div class="ph"><i class="fa fa-image" style="font-size:28px"></i><span style="font-size:12px">Paste image URL below</span></div>
+            </div>
+            <div class="form-group"><label>Image URL</label><input id="explImgUrl" placeholder="https://i.ibb.co/..." oninput="prevExplImg()"></div>
+            <div class="form-group"><label>Title *</label><input id="explTitle" placeholder="Item title" maxlength="60"></div>
+            <div class="form-group"><label>Description</label><input id="explDesc" placeholder="Short description" maxlength="100"></div>
+            <div class="form-group"><label>Link URL</label><input id="explLink" placeholder="https://..."></div>
+            <div class="form-group"><label>Tag</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+                <span class="expl-tag-chip" onclick="pickExplTag(this,'Offer')">Offer</span>
+                <span class="expl-tag-chip" onclick="pickExplTag(this,'Service')">Service</span>
+                <span class="expl-tag-chip" onclick="pickExplTag(this,'News')">News</span>
+                <span class="expl-tag-chip" onclick="pickExplTag(this,'Promo')">Promo</span>
+              </div>
+              <input id="explTag" placeholder="Custom tag...">
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-primary" id="explAddBtn" onclick="addExploreItem()" style="flex:1"><i class="fa fa-plus"></i> Add Item</button>
+              <button onclick="toggleExplForm()" style="padding:13px 16px;border:1px solid var(--border);border-radius:13px;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;font-weight:700">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- List always visible -->
+      <div class="card">
+        <div class="card-title">All Items (<span id="explCount">0</span>)</div>
+        <div class="search-row"><input class="search-inp" id="explSearch" placeholder="🔍  Search by title or tag..." oninput="filterExplore()"></div>
+        <div class="explore-list" id="exploreList"></div>
+      </div>
+    </div>
+
+    <!-- BANNER MANAGER -->
+    <div class="page" id="page-banner">
+      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><h1>🖼️ Banner Manager</h1><p>Manage home screen slider banners</p></div>
+        <button class="btn-primary" style="padding:10px 18px;font-size:13px;white-space:nowrap" onclick="toggleBannerForm()">
+          <i class="fa fa-plus" id="bannerFormIcon"></i> <span id="bannerFormBtnTxt">Add New</span>
+        </button>
+      </div>
+      <!-- Add form hidden by default -->
+      <div id="bannerAddPanel" style="display:none;margin-bottom:16px">
+        <div class="card">
+          <div class="card-title"><i class="fa fa-plus" style="color:var(--p)"></i> Add New Banner</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="img-prev-box" id="bannerImgBox">
+              <img id="bannerImgPrev" alt="">
+              <div class="ph"><i class="fa fa-image" style="font-size:28px"></i><span style="font-size:12px">Paste 16:9 image URL below</span></div>
+            </div>
+            <div class="form-group"><label>Image URL * (16:9 recommended)</label><input id="bannerImgUrl" placeholder="https://i.ibb.co/..." oninput="prevBannerImg()"></div>
+            <div class="form-group"><label>Title</label><input id="bannerTitle" placeholder="Banner title" maxlength="50"></div>
+            <div class="form-group"><label>Tap Link (optional)</label><input id="bannerLink" placeholder="https://..."></div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-primary" id="bannerAddBtn" onclick="addBanner()" style="flex:1"><i class="fa fa-plus"></i> Add Banner</button>
+              <button onclick="toggleBannerForm()" style="padding:13px 16px;border:1px solid var(--border);border-radius:13px;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;font-weight:700">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- List always visible -->
+      <div class="card">
+        <div class="card-title">Banners (<span id="bannerCount">0</span>)</div>
+        <div class="banner-grid" id="bannerGrid"></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="page" id="page-notif">
+      <div class="page-header"><h1>🔔 Notifications</h1><p>Send push notifications to users</p></div>
+      <div class="mgr-grid">
+        <div class="card">
+          <div class="card-title">Compose</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="notif-type-row">
+              <button class="notif-type-btn active" id="notifGlobalBtn" onclick="setNotifType('global')"><i class="fa fa-globe"></i> Global</button>
+              <button class="notif-type-btn" id="notifPersonalBtn" onclick="setNotifType('personal')"><i class="fa fa-user"></i> Personal</button>
+            </div>
+            <div id="notifTargetWrap" style="display:none">
+              <div class="form-group"><label>Target (phone / UPI / name)</label><input id="notifTarget" placeholder="Search user..."></div>
+            </div>
+            <div class="form-group"><label>Title *</label><input id="notifTitle" placeholder="Notification title" maxlength="60"></div>
+            <div class="form-group"><label>Message *</label><textarea id="notifMsg" placeholder="Notification message..." maxlength="200"></textarea></div>
+            <div class="form-group"><label>Image URL (optional)</label><input id="notifImgUrl" placeholder="https://..."></div>
+            <div class="form-group"><label>Action URL (optional)</label><input id="notifAction" placeholder="https://..."></div>
+            <button class="btn-primary" id="notifSendBtn" onclick="sendNotif()"><i class="fa fa-paper-plane"></i> Send Notification</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Sent History</div>
+          <div id="notifHistory" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-header"><h1>⚙️ Settings</h1><p>Configure SX Pay app settings</p></div>
+      <div style="display:flex;flex-direction:column;gap:12px" id="settingsRows"></div>
+    </div>
+
+  </div><!-- end main -->
+</div><!-- end app -->
+
+<!-- USER DETAIL MODAL -->
+<div class="modal-bg" id="userModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>User Details</h3>
+      <button class="modal-close" onclick="closeModal('userModal')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="user-profile-hero">
+        <div class="user-profile-av" id="modalUserAv">U</div>
+        <div>
+          <div class="user-profile-name" id="modalUserName">—</div>
+          <div class="user-profile-upi" id="modalUserUpi">—</div>
+          <div style="margin-top:6px;display:flex;gap:6px">
+            <span id="modalPinBadge" style="display:none;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;background:rgba(6,214,160,.15);color:var(--success)">✓ PIN Set</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-field"><label>Full Name</label><input id="editName"></div>
+        <div class="detail-field"><label>Balance (₹)</label><input id="editBalance" type="number" step="0.01" min="0"></div>
+        <div class="detail-field"><label>UPI ID</label><input id="editUpi"></div>
+        <div class="detail-field"><label>Phone</label><input id="editPhone" readonly></div>
+        <div class="detail-field"><label>Refer Code</label><input id="editRefer" readonly></div>
+        <div class="detail-field"><label>Refer Count</label><input id="editReferCount" readonly></div>
+        <div class="detail-field full"><label>Profile Pic URL</label><input id="editPic" placeholder="https://..."></div>
+        <div class="detail-field full"><label>Password</label><input id="editPassword" type="password" placeholder="Leave empty to keep current"></div>
+      </div>
+      <!-- Transactions -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Recent Transactions</div>
+        <div id="modalTxns" style="max-height:200px;overflow-y:auto"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-save" onclick="saveUserChanges()"><i class="fa fa-floppy-disk"></i> Save Changes</button>
+        <button class="btn-cancel" onclick="closeModal('userModal')">Cancel</button>
+        <button class="btn-del-user" onclick="deleteUserFromModal()"><i class="fa fa-trash"></i></button>
+      </div>
+      <div id="modalMsg" style="font-size:13px;text-align:center;min-height:18px;margin-top:4px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLORE EDIT MODAL -->
+<div class="modal-bg" id="explModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Edit Explore Item</h3>
+      <button class="modal-close" onclick="closeModal('explModal')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="img-prev-box" id="explEditImgBox"><img id="explEditImgPrev" alt=""><div class="ph"><i class="fa fa-image" style="font-size:28px"></i></div></div>
+      <div class="form-group"><label>Image URL</label><input id="explEditImgUrl" oninput="prevExplEditImg()"></div>
+      <div class="form-group"><label>Title</label><input id="explEditTitle"></div>
+      <div class="form-group"><label>Description</label><input id="explEditDesc"></div>
+      <div class="form-group"><label>Link</label><input id="explEditLink"></div>
+      <div class="form-group"><label>Tag</label><input id="explEditTag"></div>
+      <input type="hidden" id="explEditId">
+      <div class="modal-actions">
+        <button class="btn-save" onclick="saveExplEdit()"><i class="fa fa-floppy-disk"></i> Save</button>
+        <button class="btn-cancel" onclick="closeModal('explModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toastWrap"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+// ═══════════════════════════════
+// FIREBASE
+// ═══════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyC9h8kviR0enf8uxHUyWjHioNKTi",
+  authDomain: "payment-gateway-ca288.firebaseapp.com",
+  databaseURL: "https://payment-gateway-ca288-default-rtdb.firebaseio.com",
+  projectId: "payment-gateway-ca288",
+  storageBucket: "payment-gateway-ca288.firebasestorage.app",
+  messagingSenderId: "557853688180",
+  appId: "1:557853688180:web:b23f163ebda6ace7236c21",
+  measurementId: "G-044F741PMG"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// MASTER KEY for new admin creation (stored in Firebase)
+const MASTER_KEY_PATH = 'adminConfig/masterKey';
+const ADMINS_PATH = 'adminConfig/admins';
+
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+let currentAdmin = null;
+let allUsers = {};
+let allExplores = {};
+let allBanners = {};
+let currentEditUser = null;
+let notifType = 'global';
+let pieChart = null;
+let sortAsc = true;
+let currentPage = 'dashboard';
+
+// ═══════════════════════════════
+// SPLASH → AUTH
+// ═══════════════════════════════
+window.onload = async () => {
+  await firebase.auth().signInAnonymously().catch(()=>{});
+  loadAppIcon();
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('out');
+    setTimeout(() => {
+      document.getElementById('splash').style.display = 'none';
+      const saved = localStorage.getItem('sxadmin');
+      if (saved) {
+        try {
+          currentAdmin = JSON.parse(saved);
+          launchApp();
+        } catch { showAuth(); }
+      } else { showAuth(); }
+    }, 600);
+  }, 2000);
+};
+
+async function loadAppIcon() {
+  const snap = await db.ref('appSettings/iconUrl').once('value').catch(()=>null);
+  const url = snap && snap.val();
+  if (url) {
+    ['splashIconImg','sbIconImg'].forEach(id => {
+      const img = document.getElementById(id);
+      if (!img) return;
+      img.onload = () => { img.style.display='block'; document.getElementById(id==='splashIconImg'?'splashIconFallback':'sbIconFallback').style.display='none'; };
+      img.src = url;
+    });
+  }
+}
+
+function showAuth() { document.getElementById('authWrap').classList.add('show'); }
+
+// ═══════════════════════════════
+// AUTH TABS
+// ═══════════════════════════════
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
+  document.getElementById('registerForm').style.display = tab==='register'?'block':'none';
+  document.getElementById('authErr').textContent = '';
+}
+
+// ═══════════════════════════════
+// LOGIN
+// ═══════════════════════════════
+async function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err = document.getElementById('authErr');
+  if (!user||!pass) { err.textContent='Fill all fields'; return; }
+  try {
+    const snap = await db.ref(ADMINS_PATH+'/'+user).once('value');
+    const data = snap.val();
+    if (!data) { err.textContent='Admin not found'; return; }
+    if (data.password !== btoa(pass)) { err.textContent='Wrong password'; return; }
+    currentAdmin = { username: user, ...data };
+    localStorage.setItem('sxadmin', JSON.stringify(currentAdmin));
+    document.getElementById('authWrap').classList.remove('show');
+    launchApp();
+  } catch(e) { err.textContent='Login failed: '+e.message; }
+}
+
+// ═══════════════════════════════
+// REGISTER
+// ═══════════════════════════════
+async function doRegister() {
+  const user = document.getElementById('regUser').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const key  = document.getElementById('regKey').value;
+  const err  = document.getElementById('authErr');
+  if (!user||!pass||!pass2||!key) { err.textContent='Fill all fields'; return; }
+  if (pass!==pass2) { err.textContent='Passwords do not match'; return; }
+  if (user.length<3) { err.textContent='Username too short'; return; }
+  try {
+    const masterSnap = await db.ref(MASTER_KEY_PATH).once('value');
+    let masterKey = masterSnap.val();
+    // First admin: set master key as the provided key
+    if (!masterKey) {
+      await db.ref(MASTER_KEY_PATH).set(btoa(key));
+      masterKey = btoa(key);
+    }
+    if (btoa(key)!==masterKey) { err.textContent='Wrong master key'; return; }
+    const existing = await db.ref(ADMINS_PATH+'/'+user).once('value');
+    if (existing.val()) { err.textContent='Username taken'; return; }
+    await db.ref(ADMINS_PATH+'/'+user).set({ password: btoa(pass), createdAt: new Date().toISOString() });
+    err.style.color='var(--success)';
+    err.textContent='✅ Admin created! Logging in...';
+    setTimeout(() => {
+      err.style.color='var(--danger)'; err.textContent='';
+      document.getElementById('loginUser').value = user;
+      document.getElementById('loginPass').value = pass;
+      switchAuthTab('login');
+    }, 1500);
+  } catch(e) { err.textContent='Failed: '+e.message; }
+}
+
+// ═══════════════════════════════
+// LAUNCH APP
+// ═══════════════════════════════
+function launchApp() {
+  document.getElementById('sbAdminAv').textContent = currentAdmin.username[0].toUpperCase();
+  document.getElementById('sbAdminName').textContent = currentAdmin.username;
+  document.getElementById('app').classList.add('show');
+  loadAppIcon();
+  listenData();
+  navTo('dashboard');
+}
+
+// ═══════════════════════════════
+// REALTIME DATA LISTENER
+// ═══════════════════════════════
+let allTransactions = {};
+
+function listenData() {
+  // Users
+  db.ref('users').on('value',
+    snap => {
+      allUsers = snap.val() || {};
+      const count = Object.keys(allUsers).length;
+      const badge = document.getElementById('userBadge');
+      if (badge) badge.textContent = count;
+      if (currentPage==='dashboard') renderDashboard();
+      if (currentPage==='users') renderUsers();
+    },
+    err => {
+      console.error('Users load error:', err.code);
+      toast('Users: ' + err.code, 'error');
+    }
+  );
+  // Transactions (separate node)
+  db.ref('transactions').on('value',
+    snap => {
+      allTransactions = snap.val() || {};
+      if (currentPage==='dashboard') renderDashboard();
+    },
+    err => console.warn('Transactions:', err.code)
+  );
+  // Explore items
+  db.ref('exploreItems').on('value',
+    snap => {
+      allExplores = snap.val() || {};
+      if (currentPage==='explore') renderExplore();
+    },
+    err => toast('Explore: ' + err.code, 'error')
+  );
+  // Promo slides / banners
+  db.ref('promoSlides').on('value',
+    snap => {
+      allBanners = snap.val() || {};
+      if (currentPage==='banner') renderBanners();
+    },
+    err => toast('Banners: ' + err.code, 'error')
+  );
+}
+
+// ═══════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sbOverlay');
+  if (window.innerWidth<=768) {
+    sb.classList.toggle('visible');
+    ov.classList.toggle('show');
+  } else {
+    sb.classList.toggle('hidden');
+    document.getElementById('main').classList.toggle('full');
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('visible');
+  document.getElementById('sbOverlay').classList.remove('show');
+}
+
+// ═══════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════
+const pageTitles = {dashboard:'Dashboard',users:'User Manager',explore:'Explore Manager',banner:'Banner Manager',notif:'Notifications',settings:'Settings'};
+function navTo(page) {
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i=>{ if(i.getAttribute('onclick')&&i.getAttribute('onclick').includes("'"+page+"'")) i.classList.add('active'); });
+  document.getElementById('topbarTitle').textContent = pageTitles[page]||page;
+  if (window.innerWidth<=768) closeSidebar();
+  if (page==='dashboard') renderDashboard();
+  if (page==='users') renderUsers();
+  if (page==='explore') renderExplore();
+  if (page==='banner') renderBanners();
+  if (page==='settings') renderSettings();
+  if (page==='notif') renderNotifHistory();
+}
+function refreshCurrent() { navTo(currentPage); toast('Refreshed','success'); }
+
+// ═══════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════
+function renderDashboard() {
+  try {
+  const users = Object.values(allUsers);
+  const totalBal = users.reduce((s,u)=>s+(parseFloat(u.balance)||0),0);
+  let totalTxns=0, totalVol=0;
+  try {
+    Object.values(allTransactions).forEach(userTxns=>{
+      if (!userTxns || typeof userTxns !== 'object') return;
+      Object.values(userTxns).forEach(t=>{ if(t&&t.type==='debit'){totalTxns++;totalVol+=parseFloat(t.amount)||0;} });
+    });
+  } catch(e) {}
+  if (totalTxns===0) {
+    users.forEach(u=>{
+      const txns = Object.values(u.transactions||{});
+      txns.forEach(t=>{ if(t&&t.type==='debit'){totalTxns++;totalVol+=parseFloat(t.amount)||0;} });
+    });
+  }
+  const setEl = (id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  setEl('ds-users', users.length);
+  setEl('ds-txns', totalTxns);
+  setEl('ds-vol', '₹'+totalVol.toFixed(0));
+  setEl('ds-bal', '₹'+totalBal.toFixed(0));
+
+  // Quick user stats
+  const pinSet = users.filter(u=>u.pinSetup).length;
+  const withPic = users.filter(u=>u.profilePic).length;
+  document.getElementById('userQuickStats').innerHTML = [
+    {icon:'fa-key',color:'#FFD166',label:'PIN Setup',val:pinSet+' / '+users.length},
+    {icon:'fa-image',color:'#06D6A0',label:'Profile Pics',val:withPic+' / '+users.length},
+    {icon:'fa-arrow-right-arrow-left',color:'#7C5CFF',label:'Total Txns',val:totalTxns},
+    {icon:'fa-indian-rupee-sign',color:'#FF6584',label:'Volume Sent',val:'₹'+totalVol.toFixed(0)},
+  ].map(s=>`<div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg3);border-radius:12px">
+    <div style="width:36px;height:36px;border-radius:10px;background:${s.color}20;color:${s.color};display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="fa ${s.icon}"></i></div>
+    <div style="flex:1"><div style="font-size:12px;color:var(--text2)">${s.label}</div></div>
+    <div style="font-size:15px;font-weight:800">${s.val}</div>
+  </div>`).join('');
+
+  // Pie chart — balance distribution
+  const top5 = users.sort((a,b)=>(b.balance||0)-(a.balance||0)).slice(0,5);
+  const labels = top5.map(u=>u.name||'User');
+  const data = top5.map(u=>parseFloat(u.balance)||0);
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(ctx, {
+    type:'doughnut',
+    data:{ labels, datasets:[{data, backgroundColor:['#7C5CFF','#C471F5','#FF6584','#06D6A0','#FFD166'], borderWidth:0, hoverOffset:8}] },
+    options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ color:'#9AA3C8', font:{size:11} } } }, cutout:'68%' }
+  });
+
+  // Recent users
+  const recent = [...users].slice(-5).reverse();
+  document.getElementById('ds-recent-users').innerHTML = recent.length
+    ? recent.map(u=>`<div class="txn-row">
+        <div class="user-av" style="width:40px;height:40px;font-size:15px;">${u.profilePic?`<img src="${u.profilePic}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`:u.name?u.name[0].toUpperCase():'U'}</div>
+        <div class="txn-info"><div class="txn-peer">${u.name||'User'}</div><div class="txn-date">${u.upiId||''}@sovitx</div></div>
+        <div style="font-size:14px;font-weight:700">₹${parseFloat(u.balance||0).toFixed(0)}</div>
+      </div>`).join('')
+    : '<div class="empty-state"><i class="fa fa-users"></i><h3>No users yet</h3></div>';
+  } catch(dashErr) { console.error('Dashboard render error:', dashErr); }
+}
+
+// ═══════════════════════════════
+// USER MANAGER
+// ═══════════════════════════════
+function renderUsers(filterStr='') {
+  try {
+  const q = (filterStr||document.getElementById('userSearch')?.value||'').toLowerCase();
+  // allUsers might be empty — show loading state
+  const usersGridEl = document.getElementById('usersGrid');
+  if (!usersGridEl) return;
+  if (!Object.keys(allUsers).length) {
+    usersGridEl.innerHTML='<div class="empty-state" style="grid-column:span 3"><i class="fa fa-users"></i><h3>No users yet</h3><p>Users will appear here once they sign up</p></div>';
+    return;
+  }
+  let entries = Object.entries(allUsers);
+  if (q) entries = entries.filter(([ph,u])=>
+    (u.name||'').toLowerCase().includes(q) ||
+    ph.includes(q) ||
+    (u.upiId||'').toLowerCase().includes(q)
+  );
+  entries.sort((a,b)=> sortAsc ? (a[1].name||'').localeCompare(b[1].name||'') : (b[1].name||'').localeCompare(a[1].name||''));
+  const grid = document.getElementById('usersGrid');
+  if (!grid) return;
+  if (!entries.length) {
+    grid.innerHTML='<div class="empty-state" style="grid-column:span 3"><i class="fa fa-users"></i><h3>No users found</h3></div>';
+    return;
+  }
+  grid.innerHTML = entries.map(([ph,u])=>{
+    const userTxns = allTransactions[ph] || u.transactions || {};
+    const txnCount = Object.keys(userTxns).length;
+    const colors=['#7C5CFF','#06D6A0','#FF6584','#FFD166','#0099FF'];
+    const color = colors[(u.name||'U').charCodeAt(0)%colors.length];
+    return `<div class="user-card" onclick="openUserModal('${ph}')">
+      <div class="user-card-top">
+        <div class="user-av" style="background:${u.profilePic?'var(--bg4)':color}">${u.profilePic?`<img src="${u.profilePic}">`:( u.name?u.name[0].toUpperCase():'U')}</div>
+        <div style="flex:1;min-width:0">
+          <div class="user-card-name">${u.name||'User'}</div>
+          <div class="user-card-phone">${ph}</div>
+        </div>
+        ${u.pinSetup?'<span style="font-size:10px;background:rgba(6,214,160,.15);color:var(--success);padding:2px 7px;border-radius:20px;font-weight:700">✓ PIN</span>':''}
+      </div>
+      <div class="user-card-stats">
+        <div class="user-stat-chip"><div class="v">₹${parseFloat(u.balance||0).toFixed(0)}</div><div class="l">Balance</div></div>
+        <div class="user-stat-chip"><div class="v">${txnCount}</div><div class="l">Txns</div></div>
+        <div class="user-stat-chip"><div class="v">${u.referCount||0}</div><div class="l">Refers</div></div>
+      </div>
+      <button class="user-view-btn">View Details</button>
+    </div>`;
+  }).join('');
+  } catch(renderErr) { console.error('renderUsers error:', renderErr); }
+}
+
+function filterUsers() { renderUsers(); }
+function sortUsers() { sortAsc=!sortAsc; renderUsers(); toast('Sorted '+(sortAsc?'A→Z':'Z→A'),'success'); }
+
+// ─── USER MODAL ───
+async function openUserModal(phone) {
+  const u = allUsers[phone];
+  if (!u) { toast('User not found', 'error'); return; }
+  try {
+  currentEditUser = phone;
+
+  // Avatar
+  const av = document.getElementById('modalUserAv');
+  av.innerHTML = u.profilePic ? `<img src="${u.profilePic}" style="width:100%;height:100%;object-fit:cover;">` : (u.name?u.name[0].toUpperCase():'U');
+
+  document.getElementById('modalUserName').textContent = u.name||'User';
+  document.getElementById('modalUserUpi').textContent = (u.upiId||'')+'@sovitx';
+  document.getElementById('modalPinBadge').style.display = u.pinSetup?'inline':'none';
+
+  // Fields
+  document.getElementById('editName').value = u.name||'';
+  document.getElementById('editBalance').value = u.balance||0;
+  document.getElementById('editUpi').value = u.upiId||'';
+  document.getElementById('editPhone').value = phone;
+  document.getElementById('editRefer').value = u.referralCode||'';
+  document.getElementById('editReferCount').value = u.referCount||0;
+  document.getElementById('editPic').value = u.profilePic||'';
+  document.getElementById('editPassword').value = '';
+  document.getElementById('modalMsg').textContent = '';
+
+  // Transactions
+  const rawTxns = allTransactions[phone] || u.transactions || {};
+  const txns = Object.values(rawTxns).reverse().slice(0,8);
+  document.getElementById('modalTxns').innerHTML = txns.length
+    ? txns.map(t=>`<div class="txn-row">
+        <div class="txn-icon ${t.type}"><i class="fa fa-arrow-${t.type==='debit'?'up':'down'}-right"></i></div>
+        <div class="txn-info">
+          <div class="txn-peer">${t.type==='debit'?t.to:t.from}</div>
+          <div class="txn-date">${new Date(t.timestamp).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</div>
+          <div class="txn-utr">UTR: ${t.utr||''}</div>
+        </div>
+        <div class="txn-amount ${t.type}">${t.type==='debit'?'-':'+'} ₹${parseFloat(t.amount).toFixed(2)}</div>
+      </div>`).join('')
+    : '<div style="text-align:center;color:var(--text2);padding:20px;font-size:13px;">No transactions yet</div>';
+
+  openModal('userModal');
+  } catch(e) { console.error('userModal err:', e); toast('Error loading user','error'); }
+}
+
+async function saveUserChanges() {
+  const ph = currentEditUser;
+  const name = document.getElementById('editName').value.trim();
+  const bal  = parseFloat(document.getElementById('editBalance').value);
+  const upi  = document.getElementById('editUpi').value.trim();
+  const pic  = document.getElementById('editPic').value.trim();
+  const pass = document.getElementById('editPassword').value;
+  const msg  = document.getElementById('modalMsg');
+  if (!name||!upi) { msg.style.color='var(--danger)'; msg.textContent='Name and UPI required'; return; }
+  const updates = { name, balance: isNaN(bal)?0:bal, upiId: upi, profilePic: pic };
+  if (pass) updates.password = pass;
+  try {
+    await db.ref('users/'+ph).update(updates);
+    msg.style.color='var(--success)'; msg.textContent='✅ Saved!';
+    setTimeout(()=>closeModal('userModal'),1200);
+    toast('User updated','success');
+  } catch(e) { msg.style.color='var(--danger)'; msg.textContent='Failed: '+e.message; }
+}
+
+async function deleteUserFromModal() {
+  const ph = currentEditUser;
+  const u = allUsers[ph];
+  if (!confirm(`Delete "${u?.name||ph}"?\n\nThis will permanently delete:\n• User account\n• All transactions\n\nCannot be undone!`)) return;
+  try {
+    await db.ref('users/'+ph).remove();
+    closeModal('userModal');
+    toast('User deleted','success');
+  } catch(e) { toast('Delete failed','error'); }
+}
+
+// ═══════════════════════════════
+// EXPLORE MANAGER
+// ═══════════════════════════════
+function prevExplImg() {
+  const url = document.getElementById('explImgUrl').value.trim();
+  const box = document.getElementById('explImgBox');
+  const img = document.getElementById('explImgPrev');
+  if (!url) { box.classList.remove('loaded'); return; }
+  img.onload = ()=>box.classList.add('loaded');
+  img.onerror = ()=>box.classList.remove('loaded');
+  img.src = url;
+}
+
+function pickExplTag(el,tag) {
+  document.querySelectorAll('.expl-tag-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('explTag').value = tag;
+}
+
+async function addExploreItem() {
+  const title = document.getElementById('explTitle').value.trim();
+  const imgUrl= document.getElementById('explImgUrl').value.trim();
+  const desc  = document.getElementById('explDesc').value.trim();
+  const link  = document.getElementById('explLink').value.trim();
+  const tag   = document.getElementById('explTag').value.trim()||'General';
+  if (!title) { toast('Title required','error'); return; }
+  const btn = document.getElementById('explAddBtn');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Adding...';
+  try {
+    await db.ref('exploreItems').push({ title, imageUrl:imgUrl, description:desc, link, tag, hidden:false, order:Date.now(), createdAt:new Date().toISOString() });
+    toast('Item added!','success');
+    ['explTitle','explImgUrl','explDesc','explLink','explTag'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('explImgBox').classList.remove('loaded');
+    document.querySelectorAll('.expl-tag-chip').forEach(c=>c.classList.remove('sel'));
+    // Close form after add
+    document.getElementById('explAddPanel').style.display='none';
+    document.getElementById('explFormIcon').className='fa fa-plus';
+    document.getElementById('explFormBtnTxt').textContent='Add New';
+  } catch(e) { toast('Failed: '+e.message,'error'); }
+  btn.disabled=false; btn.innerHTML='<i class="fa fa-plus"></i> Add Item';
+}
+
+function filterExplore() { renderExplore(); }
+
+function renderExplore() {
+  const q = (document.getElementById('explSearch')?.value||'').toLowerCase();
+  let entries = Object.entries(allExplores);
+  if (q) entries = entries.filter(([,v])=>(v.title||'').toLowerCase().includes(q)||(v.tag||'').toLowerCase().includes(q));
+  document.getElementById('explCount').textContent = entries.length;
+  const list = document.getElementById('exploreList');
+  if (!list) return;
+  if (!entries.length) { list.innerHTML='<div class="empty-state"><i class="fa fa-compass"></i><h3>No items</h3></div>'; return; }
+  list.innerHTML = entries.map(([id,item])=>`
+    <div class="explore-row">
+      <div class="explore-thumb">
+        ${item.imageUrl?`<img src="${item.imageUrl}" onerror="this.style.display='none'">` : '<i class="fa fa-image"></i>'}
+      </div>
+      <div class="explore-info">
+        <div class="explore-title">${item.title}</div>
+        ${item.tag?`<span class="explore-tag">${item.tag}</span>`:''}
+      </div>
+      <div class="explore-actions">
+        <button class="act-btn btn-toggle-vis ${item.hidden?'off':''}" onclick="toggleExpl('${id}',${item.hidden})">
+          <i class="fa fa-${item.hidden?'eye':'eye-slash'}"></i>
+        </button>
+        <button class="act-btn btn-edit" onclick="openExplEdit('${id}')"><i class="fa fa-pen"></i></button>
+        <button class="act-btn btn-delete" onclick="deleteExpl('${id}','${(item.title||'').replace(/'/g,"\\'")}')"><i class="fa fa-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleExpl(id,hidden) {
+  await db.ref('exploreItems/'+id+'/hidden').set(!hidden);
+  toast(hidden?'Item visible':'Item hidden','success');
+}
+async function deleteExpl(id,title) {
+  if (!confirm('Delete "'+title+'"?')) return;
+  await db.ref('exploreItems/'+id).remove();
+  toast('Deleted','success');
+}
+function openExplEdit(id) {
+  const item = allExplores[id];
+  if (!item) return;
+  document.getElementById('explEditId').value = id;
+  document.getElementById('explEditTitle').value = item.title||'';
+  document.getElementById('explEditDesc').value = item.description||'';
+  document.getElementById('explEditImgUrl').value = item.imageUrl||'';
+  document.getElementById('explEditLink').value = item.link||'';
+  document.getElementById('explEditTag').value = item.tag||'';
+  prevExplEditImg();
+  openModal('explModal');
+}
+function prevExplEditImg() {
+  const url = document.getElementById('explEditImgUrl').value.trim();
+  const box = document.getElementById('explEditImgBox');
+  const img = document.getElementById('explEditImgPrev');
+  if (!url) { box.classList.remove('loaded'); return; }
+  img.onload=()=>box.classList.add('loaded');
+  img.onerror=()=>box.classList.remove('loaded');
+  img.src=url;
+}
+async function saveExplEdit() {
+  const id = document.getElementById('explEditId').value;
+  await db.ref('exploreItems/'+id).update({
+    title: document.getElementById('explEditTitle').value.trim(),
+    description: document.getElementById('explEditDesc').value.trim(),
+    imageUrl: document.getElementById('explEditImgUrl').value.trim(),
+    link: document.getElementById('explEditLink').value.trim(),
+    tag: document.getElementById('explEditTag').value.trim(),
+    updatedAt: new Date().toISOString()
+  });
+  closeModal('explModal');
+  toast('Saved!','success');
+}
+
+// TAG CHIP STYLE
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.expl-tag-chip').forEach(c=>{
+    c.style.cssText='padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;';
+  });
+});
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('expl-tag-chip')&&e.target.classList.contains('sel')){
+    e.target.style.background='var(--p)';e.target.style.color='white';e.target.style.borderColor='var(--p)';
+  }
+});
+
+// ═══════════════════════════════
+// BANNER MANAGER
+// ═══════════════════════════════
+function prevBannerImg() {
+  const url = document.getElementById('bannerImgUrl').value.trim();
+  const box = document.getElementById('bannerImgBox');
+  const img = document.getElementById('bannerImgPrev');
+  if (!url) { box.classList.remove('loaded'); return; }
+  img.onload=()=>box.classList.add('loaded');
+  img.onerror=()=>box.classList.remove('loaded');
+  img.src=url;
+}
+
+async function addBanner() {
+  const url = document.getElementById('bannerImgUrl').value.trim();
+  const title = document.getElementById('bannerTitle').value.trim()||'Banner';
+  const link = document.getElementById('bannerLink').value.trim();
+  if (!url) { toast('Image URL required','error'); return; }
+  const btn = document.getElementById('bannerAddBtn');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Adding...';
+  try {
+    await db.ref('promoSlides').push({ imageUrl:url, title, link, hidden:false, order:Object.keys(allBanners).length, createdAt:new Date().toISOString() });
+    toast('Banner added!','success');
+    ['bannerImgUrl','bannerTitle','bannerLink'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('bannerImgBox').classList.remove('loaded');
+    // Close form
+    document.getElementById('bannerAddPanel').style.display='none';
+    document.getElementById('bannerFormIcon').className='fa fa-plus';
+    document.getElementById('bannerFormBtnTxt').textContent='Add New';
+  } catch(e) { toast('Failed','error'); }
+  btn.disabled=false; btn.innerHTML='<i class="fa fa-plus"></i> Add Banner';
+}
+
+function renderBanners() {
+  const entries = Object.entries(allBanners).sort((a,b)=>(a[1].order??99)-(b[1].order??99));
+  document.getElementById('bannerCount').textContent = entries.length;
+  const grid = document.getElementById('bannerGrid');
+  if (!grid) return;
+  if (!entries.length) { grid.innerHTML='<div class="empty-state"><i class="fa fa-images"></i><h3>No banners</h3></div>'; return; }
+  grid.innerHTML = entries.map(([id,b],idx)=>`
+    <div class="banner-row">
+      <div class="banner-thumb">
+        ${b.imageUrl?`<img src="${b.imageUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-img" style="display:none"><i class="fa fa-image"></i></div>`:'<div class="no-img"><i class="fa fa-image"></i></div>'}
+        <div class="banner-num">#${idx+1}</div>
+        ${b.hidden?'<div class="banner-hidden-badge">HIDDEN</div>':''}
+      </div>
+      <div class="banner-body">
+        <div class="banner-info">
+          <div class="banner-title">${b.title||'Untitled'}</div>
+          <div class="banner-link">${b.link||'No link'}</div>
+        </div>
+        <div class="banner-actions">
+          <button class="act-btn" onclick="moveBanner('${id}',${idx},-1)" ${idx===0?'disabled style="opacity:.3"':''}><i class="fa fa-arrow-up"></i></button>
+          <button class="act-btn" onclick="moveBanner('${id}',${idx},1)" ${idx===entries.length-1?'disabled style="opacity:.3"':''}><i class="fa fa-arrow-down"></i></button>
+          <button class="act-btn btn-toggle-vis ${b.hidden?'off':''}" onclick="toggleBanner('${id}',${b.hidden})"><i class="fa fa-${b.hidden?'eye':'eye-slash'}"></i></button>
+          <button class="act-btn btn-delete" onclick="deleteBanner('${id}','${(b.title||'banner').replace(/'/g,"\\'")}')"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleBanner(id,hidden) { await db.ref('promoSlides/'+id+'/hidden').set(!hidden); toast(hidden?'Banner visible':'Banner hidden','success'); }
+async function deleteBanner(id,title) {
+  if (!confirm('Delete "'+title+'"?')) return;
+  await db.ref('promoSlides/'+id).remove();
+  toast('Deleted','success');
+}
+async function moveBanner(id,idx,dir) {
+  const entries = Object.entries(allBanners).sort((a,b)=>(a[1].order??99)-(b[1].order??99));
+  const swapIdx = idx+dir;
+  if (swapIdx<0||swapIdx>=entries.length) return;
+  const swapId = entries[swapIdx][0];
+  await db.ref('promoSlides/'+id+'/order').set(swapIdx);
+  await db.ref('promoSlides/'+swapId+'/order').set(idx);
+  toast(dir<0?'Moved up':'Moved down','success');
+}
+
+// ═══════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════
+function setNotifType(type) {
+  notifType = type;
+  document.getElementById('notifGlobalBtn').classList.toggle('active', type==='global');
+  document.getElementById('notifPersonalBtn').classList.toggle('active', type==='personal');
+  document.getElementById('notifTargetWrap').style.display = type==='personal'?'block':'none';
+}
+
+async function sendNotif() {
+  const title = document.getElementById('notifTitle').value.trim();
+  const msg   = document.getElementById('notifMsg').value.trim();
+  const imgUrl= document.getElementById('notifImgUrl').value.trim();
+  const action= document.getElementById('notifAction').value.trim();
+  const target= document.getElementById('notifTarget').value.trim();
+  if (!title||!msg) { toast('Title and message required','error'); return; }
+  const btn = document.getElementById('notifSendBtn');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Sending...';
+  const notifData = { title, message:msg, imageUrl:imgUrl, actionUrl:action, timestamp:new Date().toISOString(), read:false };
+  try {
+    if (notifType==='global') {
+      const phones = Object.keys(allUsers);
+      await Promise.all(phones.map(ph=>db.ref('notifications/'+ph).push(notifData)));
+      toast('Sent to '+phones.length+' users!','success');
+    } else {
+      const ph = Object.keys(allUsers).find(p=>{
+        const u=allUsers[p];
+        return p===target||(u.upiId||'').toLowerCase()===target.toLowerCase()||(u.name||'').toLowerCase()===target.toLowerCase();
+      });
+      if (!ph) { toast('User not found','error'); btn.disabled=false; btn.innerHTML='<i class="fa fa-paper-plane"></i> Send Notification'; return; }
+      await db.ref('notifications/'+ph).push(notifData);
+      toast('Sent to '+allUsers[ph].name+'!','success');
+    }
+    // Save to history
+    await db.ref('adminConfig/notifHistory').push({ ...notifData, type:notifType, sentBy:currentAdmin.username });
+    ['notifTitle','notifMsg','notifImgUrl','notifAction','notifTarget'].forEach(id=>document.getElementById(id).value='');
+    renderNotifHistory();
+  } catch(e) { toast('Failed: '+e.message,'error'); }
+  btn.disabled=false; btn.innerHTML='<i class="fa fa-paper-plane"></i> Send Notification';
+}
+
+async function renderNotifHistory() {
+  const snap = await db.ref('adminConfig/notifHistory').limitToLast(10).once('value');
+  const data = snap.val()||{};
+  const entries = Object.values(data).reverse();
+  const el = document.getElementById('notifHistory');
+  if (!el) return;
+  el.innerHTML = entries.length ? entries.map(n=>`
+    <div style="background:var(--bg3);border-radius:12px;padding:12px;border:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:3px">${n.title}</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px">${n.message}</div>
+      <div style="display:flex;gap:8px">
+        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${n.type==='global'?'rgba(124,92,255,.15)':'rgba(6,214,160,.15)'};color:${n.type==='global'?'var(--p)':'var(--success)'}">
+          ${n.type==='global'?'Global':'Personal'}
+        </span>
+        <span style="font-size:10px;color:var(--muted)">${new Date(n.timestamp).toLocaleDateString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+      </div>
+    </div>
+  `).join('') : '<div style="text-align:center;color:var(--text2);padding:30px;font-size:13px">No notifications sent yet</div>';
+}
+
+// ═══════════════════════════════
+// SETTINGS
+// ═══════════════════════════════
+const SETTINGS_FIELDS = [
+  { key:'appName', label:'App Name', icon:'fa-tag', iconBg:'#7C5CFF', desc:'Shown on splash & auth screens', type:'text', placeholder:'SX Pay' },
+  { key:'iconUrl', label:'App Icon URL', icon:'fa-image', iconBg:'#06D6A0', desc:'Splash + sidebar icon (square image URL)', type:'url', placeholder:'https://...' },
+  { key:'upiSuffix', label:'UPI Suffix', icon:'fa-at', iconBg:'#0099FF', desc:'The @tag after UPI IDs (e.g. sovitx)', type:'text', placeholder:'sovitx' },
+  { key:'welcomeBonus', label:'Welcome Bonus (₹)', icon:'fa-gift', iconBg:'#FFD166', desc:'Balance given to new users on signup', type:'number', placeholder:'100' },
+  { key:'referBonus', label:'Referral Bonus (₹)', icon:'fa-user-plus', iconBg:'#C471F5', desc:'Bonus per successful referral', type:'number', placeholder:'50' },
+  { key:'minTransfer', label:'Min Transfer (₹)', icon:'fa-arrow-right-arrow-left', iconBg:'#FF6584', desc:'Minimum transfer amount allowed', type:'number', placeholder:'1' },
+  { key:'maxTransfer', label:'Max Transfer (₹)', icon:'fa-arrow-right-arrow-left', iconBg:'#FF6584', desc:'Maximum transfer amount per transaction', type:'number', placeholder:'10000' },
+  { key:'supportLink', label:'Support Link', icon:'fa-headset', iconBg:'#06D6A0', desc:'Customer support URL or Telegram link', type:'url', placeholder:'https://t.me/...' },
+];
+
+async function renderSettings() {
+  const snap = await db.ref('appSettings').once('value');
+  const settings = snap.val()||{};
+  const container = document.getElementById('settingsRows');
+  container.innerHTML = SETTINGS_FIELDS.map(f=>`
+    <div class="setting-row">
+      <div class="setting-icon" style="background:${f.iconBg}20;color:${f.iconBg}"><i class="fa ${f.icon}"></i></div>
+      <div class="setting-info"><h4>${f.label}</h4><p>${f.desc}</p></div>
+      <input class="setting-input" id="setting-${f.key}" type="${f.type}" value="${settings[f.key]||''}" placeholder="${f.placeholder}">
+      <button class="setting-save-btn" onclick="saveSetting('${f.key}')">Save</button>
+    </div>
+  `).join('');
+}
+
+async function saveSetting(key) {
+  const val = document.getElementById('setting-'+key).value.trim();
+  await db.ref('appSettings/'+key).set(val);
+  toast(key+' saved!','success');
+  if (key==='iconUrl') loadAppIcon();
+}
+
+// ═══════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll && document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.modal-bg.open').forEach(m=>m.classList.remove('open')); });
+
+// ═══════════════════════════════
+// TOAST
+// ═══════════════════════════════
+function toast(msg, type='success') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  const icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation' };
+  t.className='toast '+type;
+  t.innerHTML=`<i class="fa ${icons[type]||icons.success}"></i> ${msg}`;
+  wrap.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+// ─── TOGGLE ADD PANELS ───
+function toggleExplForm() {
+  const panel = document.getElementById('explAddPanel');
+  const icon = document.getElementById('explFormIcon');
+  const txt = document.getElementById('explFormBtnTxt');
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  icon.className = open ? 'fa fa-xmark' : 'fa fa-plus';
+  txt.textContent = open ? 'Close' : 'Add New';
+  if (open) panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function toggleBannerForm() {
+  const panel = document.getElementById('bannerAddPanel');
+  const icon = document.getElementById('bannerFormIcon');
+  const txt = document.getElementById('bannerFormBtnTxt');
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  icon.className = open ? 'fa fa-xmark' : 'fa fa-plus';
+  txt.textContent = open ? 'Close' : 'Add New';
+  if (open) panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════
+// LOGOUT
+// ═══════════════════════════════
+function doLogout() {
+  if (!confirm('Logout?')) return;
+  localStorage.removeItem('sxadmin');
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('authWrap').classList.add('show');
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+  toast('Logged out','success');
+}
+
+// ─── Enter key support ───
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter'){
+    if(document.getElementById('loginForm').style.display!=='none' && document.getElementById('authWrap').classList.contains('show')) doLogin();
+  }
+});
+</script>
 </body>
 </html>
